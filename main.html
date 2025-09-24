@@ -1,0 +1,2820 @@
+<!-- Paste your code here -->
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuantumQuorum - A Forum for Quantum Computing</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        /* Custom styles for the Discourse-like theme */
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827; /* gray-900 */
+            color: #d1d5db; /* gray-300 */
+        }
+        .page { display: none; }
+        .page.active { display: block; }
+
+        .sidebar-link.active {
+            background-color: #374151; /* gray-700 */
+            color: #ffffff;
+        }
+        .category-box {
+            border-left-width: 4px;
+        }
+        .main-content {
+            background-color: #1f2937; /* gray-800 */
+        }
+        .topic-link:hover {
+            background-color: #374151; /* gray-700 */
+        }
+        .answer-toggle { display: none; }
+        .vote-btn.active svg {
+            color: #60a5fa; /* blue-400 */
+        }
+        #helper-bot-container {
+            transform: translateY(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        #helper-bot-container.open {
+            transform: translateY(0);
+        }
+        .gate {
+            cursor: grab;
+        }
+        .circuit-line {
+            border-bottom: 2px solid #4b5563; /* gray-600 */
+            min-height: 50px;
+            position: relative;
+        }
+        .gate-placeholder {
+            position: absolute;
+        }
+        .leaderboard-link.active {
+            color: #fff;
+            border-bottom: 2px solid #fff;
+        }
+        
+        /* Message Container */
+        .message-container {
+            background-color: #1f2937;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        }
+        /* Message Header */
+        .message-header {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 1.5rem;
+        }
+        /* Individual Replies */
+        .reply-card {
+            border-left: 4px solid;
+            padding-left: 1rem;
+        }
+        .reply-card.border-blue-500 { border-color: #3b82f6; }
+        .reply-card.border-green-500 { border-color: #22c55e; }
+        .reply-card.border-yellow-500 { border-color: #f59e0b; }
+        .reply-card .user-info {
+            font-weight: bold;
+            color: #60a5fa;
+        }
+        .reply-card .reply-body {
+            color: #d1d5db;
+        }
+
+        /* Notification Bell Styles */
+        .notification-bell {
+            position: relative;
+        }
+        .notification-dot {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 8px;
+            height: 8px;
+            background-color: #ef4444; /* red-500 */
+            border-radius: 50%;
+            border: 1px solid #111827; /* gray-900 */
+        }
+        #notifications-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 320px;
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 100;
+        }
+        .notification-item.unread {
+            background-color: #374151; /* gray-700 */
+        }
+
+        /* Challenge Styles */
+        .challenge-option-label.correct {
+            background-color: #166534; /* green-800 */
+            border-color: #22c55e; /* green-500 */
+        }
+        .challenge-option-label.incorrect {
+            background-color: #991b1b; /* red-800 */
+            border-color: #ef4444; /* red-500 */
+        }
+
+        /* Custom scrollbar for webkit browsers */
+        #all-questions-feed::-webkit-scrollbar {
+            width: 8px;
+        }
+        #all-questions-feed::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        #all-questions-feed::-webkit-scrollbar-thumb {
+            background-color: #4b5563; /* gray-600 */
+            border-radius: 4px;
+            border: 2px solid transparent; 
+        }
+
+        /* Responsive Sidebar Styles */
+        #sidebar {
+            transition: transform 0.3s ease-in-out;
+        }
+        @media (max-width: 1024px) {
+            #sidebar {
+                transform: translateX(-100%);
+            }
+            #sidebar.open {
+                transform: translateX(0);
+            }
+        }
+
+        /* Light Theme Overrides */
+        html:not(.dark) body {
+            background-color: #ffffff;
+            color: #1f2937;
+        }
+        html:not(.dark) .main-content {
+            background-color: #f3f4f6;
+        }
+        html:not(.dark) #sidebar,
+        html:not(.dark) header {
+            background-color: #f9fafb;
+            color: #1f2937;
+            border-bottom: 1px solid #e5e7eb;
+            border-right: 1px solid #e5e7eb;
+        }
+        html:not(.dark) #sidebar .sidebar-link {
+             color: #4b5563;
+        }
+        html:not(.dark) .sidebar-link.active {
+            background-color: #e5e7eb;
+            color: #1f2937;
+        }
+        html:not(.dark) .sidebar-link:hover {
+            background-color: #e5e7eb;
+        }
+        html:not(.dark) .category-box,
+        html:not(.dark) .bg-gray-900\/50,
+        html:not(.dark) .message-container {
+            background-color: #ffffff;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+        }
+        html:not(.dark) .topic-link:hover {
+            background-color: #e5e7eb;
+        }
+        html:not(.dark) .leaderboard-link.active {
+            color: #1f2937;
+            border-color: #1f2937;
+        }
+        html:not(.dark) .border-gray-700 {
+            border-color: #e5e7eb;
+        }
+        html:not(.dark) .text-white,
+        html:not(.dark) .message-header,
+        html:not(.dark) .text-gray-200,
+        html:not(.dark) .text-gray-300 {
+            color: #1f2937;
+        }
+        html:not(.dark) .text-gray-400 {
+            color: #6b7280;
+        }
+        html:not(.dark) .text-gray-500 {
+            color: #9ca3af;
+        }
+        html:not(.dark) .bg-gray-800,
+        html:not(.dark) .bg-gray-700 {
+            background-color: #e5e7eb;
+        }
+        html:not(.dark) #search-input {
+            background-color: #e5e7eb;
+            color: #1f2937;
+            border: 1px solid #d1d5db;
+        }
+        html:not(.dark) #search-input::placeholder {
+            color: #9ca3af;
+        }
+        html:not(.dark) .go-back-btn {
+            color: #6b7280;
+        }
+        html:not(.dark) .go-back-btn:hover {
+            color: #1f2937;
+        }
+        html:not(.dark) input, html:not(.dark) textarea, html:not(.dark) select {
+            background-color: #f9fafb;
+            color: #1f2937;
+            border: 1px solid #d1d5db;
+        }
+        html:not(.dark) .prose-invert {
+            color: #1f2937;
+        }
+        html:not(.dark) .prose-invert h3 {
+            color: #1f2937;
+        }
+        html:not(.dark) pre {
+            background-color: #e5e7eb;
+            border: 1px solid #d1d5db;
+        }
+        html:not(.dark) code {
+            color: #1f2937;
+        }
+        /* Home page tabs styling */
+        .tab-btn {
+            @apply py-2 px-4 rounded-lg font-semibold border-2 border-transparent;
+        }
+        .tab-btn.tab-active {
+            @apply bg-blue-600 text-white border-blue-600;
+        }
+        .tab-btn:not(.tab-active) {
+            @apply bg-gray-700 text-gray-300 hover:bg-gray-600;
+        }
+        html:not(.dark) .tab-btn.tab-active {
+            @apply bg-indigo-600 text-white border-indigo-600;
+        }
+        html:not(.dark) .tab-btn:not(.tab-active) {
+            @apply bg-gray-300 text-gray-700 hover:bg-gray-200;
+        }
+        .like-btn.liked .fa-heart {
+            color: #ef4444; /* red-500 */
+            font-weight: 900; /* Solid heart */
+        }
+        
+        /* News card animation */
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .news-card {
+            animation: fade-in 0.5s ease-out;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Glitter effect for news thumbnail */
+        .glitter-thumbnail {
+            background: linear-gradient(135deg, #1f2937 25%, #4b5563 50%, #1f2937 75%);
+            background-size: 400% 400%;
+            animation: glitter 10s ease-in-out infinite;
+        }
+        @keyframes glitter {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    </style>
+</head>
+<body class="text-sm">
+
+    <div class="relative min-h-screen lg:flex">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 bg-gray-900 text-gray-300 w-72 p-4 space-y-6 overflow-y-auto z-[100] transform -translate-x-full lg:translate-x-0">
+            <div>
+                <h2 class="text-lg font-bold text-white mb-2">QuantumQuorum</h2>
+                <nav class="space-y-1">
+                    <a href="#" class="flex items-center px-3 py-2 rounded-md hover:bg-gray-700 nav-link sidebar-link active" data-page="home">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                        Home
+                    </a>
+                    <a href="#" class="flex items-center px-3 py-2 rounded-md hover:bg-gray-700 nav-link sidebar-link" data-page="announcements">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-2.465 9.168-6.088C19.344 12.333 16.618 15.903 12 17.472c-2.453.805-5.073-.298-6.564-2.789z"></path></svg>
+                        Announcements
+                    </a>
+                </nav>
+            </div>
+
+            <div>
+                <h3 class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Categories</h3>
+                <nav id="sidebar-categories" class="mt-2 space-y-1">
+                    <!-- Categories will be dynamically inserted here from static data -->
+                </nav>
+            </div>
+
+            <div>
+                <h3 class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Resources</h3>
+                <nav class="mt-2 space-y-1">
+                    <a href="#" class="flex items-center px-3 py-2 rounded-md hover:bg-gray-700 nav-link sidebar-link" data-page="members">
+                        <i class="fa-solid fa-users w-5 h-5 mr-3"></i>
+                        Members
+                    </a>
+                    <a href="#" class="flex items-center px-3 py-2 rounded-md hover:bg-gray-700 nav-link sidebar-link" data-page="facultyCorner">
+                        <i class="fa-solid fa-user-tie w-5 h-5 mr-3"></i>
+                        Faculty Corner
+                    </a>
+                    <a href="#" class="flex items-center px-3 py-2 rounded-md hover:bg-gray-700 nav-link sidebar-link" data-page="researchPapers">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Research Papers
+                    </a>
+                     <a href="#" class="flex items-center px-3 py-2 rounded-md hover:bg-gray-700 nav-link sidebar-link" data-page="docs">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                        Docs
+                    </a>
+                    <a href="#" class="flex items-center px-3 py-2 rounded-md hover:bg-gray-700 nav-link sidebar-link" data-page="news">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3h3m-3 4h3m-3 4h3m-3 4h3"></path></svg>
+                        News
+                    </a>
+                    <a href="#" class="flex items-center px-3 py-2 rounded-md hover:bg-gray-700 nav-link sidebar-link" data-page="team">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        Team Finder
+                    </a>
+                </nav>
+            </div>
+
+            <div>
+                <h3 class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Interactive</h3>
+                <nav class="mt-2 space-y-1">
+                    <a href="#" class="flex items-center px-3 py-2 rounded-md hover:bg-gray-700 nav-link sidebar-link" data-page="challenges">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4M17 3v4m2-2h-4m2 14h4m-2-2v4"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21a9 9 0 100-18 9 9 0 000 18z"></path></svg>
+                        Challenges
+                    </a>
+                    <a href="#" class="flex items-center px-3 py-2 rounded-md hover:bg-gray-700 nav-link sidebar-link" data-page="leaderboard">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        Leaderboard
+                    </a>
+                    <a href="#" class="flex items-center px-3 py-2 rounded-md hover:bg-gray-700 nav-link sidebar-link" data-page="projects">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                        Projects
+                    </a>
+                </nav>
+            </div>
+
+            <!-- New About Link -->
+            <div class="mt-auto">
+                <a href="#" class="flex items-center px-3 py-2 rounded-md hover:bg-gray-700 nav-link sidebar-link" data-page="settings">
+                    <i class="fa-solid fa-circle-info w-5 h-5 mr-3"></i>
+                    About
+                </a>
+            </div>
+        </aside>
+        
+        <!-- Sidebar Overlay for mobile -->
+        <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden lg:hidden"></div>
+
+        <!-- Main Content Wrapper -->
+        <div id="main-content-wrapper" class="flex-1 flex flex-col transition-all duration-300 ease-in-out lg:ml-72">
+            <header class="bg-gray-900 flex-shrink-0">
+                <div class="flex items-center justify-between h-16 px-4 sm:px-6">
+                    <div class="flex items-center">
+                         <button id="sidebar-toggle-btn" class="lg:hidden text-gray-400 hover:text-white mr-4">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                        </button>
+                        <button class="go-back-btn hidden items-center text-gray-400 hover:text-white">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                            Back
+                        </button>
+                    </div>
+                    <div class="flex items-center space-x-2 sm:space-x-4">
+                        <form id="search-form" class="relative hidden sm:block">
+                            <input id="search-input" type="search" placeholder="Search..." class="bg-gray-700 text-white placeholder-gray-400 rounded-md py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 w-40 sm:w-64">
+                            <svg class="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </form>
+                        <button id="ask-question-header-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 sm:px-4 rounded-md text-xs sm:text-sm">
+                            Ask
+                        </button>
+                        <div id="user-auth-container" class="flex items-center space-x-2">
+                           <!-- Auth buttons or user avatar will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="flex-1 p-4 sm:p-6 main-content">
+                <!-- Pages will be rendered here -->
+                <div id="homePage" class="page active"></div>
+                <div id="questionListPage" class="page"></div>
+                <div id="questionDetailPage" class="page"></div>
+                <div id="facultyCornerPage" class="page"></div>
+                <div id="researchPapersPage" class="page"></div>
+                <div id="researchPaperDetailPage" class="page"></div>
+                <div id="docsPage" class="page"></div>
+                <div id="docDetailPage" class="page"></div>
+                <div id="newsPage" class="page"></div>
+                <div id="newsDetailPage" class="page"></div>
+                <div id="teamPage" class="page"></div>
+                <div id="membersPage" class="page"></div>
+                <div id="userProfilePage" class="page"></div>
+                <div id="activityPage" class="page"></div>
+                <div id="messagesPage" class="page"></div>
+                <div id="announcementsPage" class="page"></div>
+                <div id="announcementDetailPage" class="page"></div>
+                <div id="messageDetailPage" class="page"></div>
+                <div id="searchResultsPage" class="page"></div>
+                <div id="challengesPage" class="page"></div>
+                <div id="challengeDetailPage" class="page"></div>
+                <div id="leaderboardPage" class="page"></div>
+                <div id="projectsPage" class="page"></div>
+                <div id="projectDetailPage" class="page"></div>
+                <div id="settingsPage" class="page"></div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="signUpModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden items-center justify-center p-4"></div>
+    <div id="logInModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden items-center justify-center p-4"></div>
+    <div id="docViewerModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden items-center justify-center p-4"></div>
+    <div id="summaryModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden items-center justify-center p-4"></div>
+    <div id="askQuestionModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden items-center justify-center p-4"></div>
+    <div id="editQuestionModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden items-center justify-center p-4"></div>
+    <div id="editProfileModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden items-center justify-center p-4 overflow-y-auto"></div>
+    <div id="messageMemberModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden items-center justify-center p-4"></div>
+    <div id="uploadPaperModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden items-center justify-center p-4"></div>
+    <div id="editPaperModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden items-center justify-center p-4"></div>
+    <div id="uploadDocModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden items-center justify-center p-4"></div>
+    <div id="postNewsModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden items-center justify-center p-4"></div>
+    <div id="createTeamModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden items-center justify-center p-4"></div>
+    <div id="addProjectModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden items-center justify-center p-4"></div>
+    <div id="postAnnouncementModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden items-center justify-center p-4"></div>
+    <div id="createChallengeModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden items-center justify-center p-4 overflow-y-auto"></div>
+    <div id="challengeResultModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden items-center justify-center p-4"></div>
+    <div id="messageModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden items-center justify-center p-4"></div>
+    <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden items-center justify-center p-4"></div>
+    <div id="firstLoginModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden items-center justify-center p-4"></div>
+    <!-- NEW: Modal for Contact Details -->
+    <div id="contactDetailsModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden items-center justify-center p-4">
+        <form id="contact-details-form" class="bg-gray-800 border border-gray-700 rounded-lg p-8 w-full max-w-md">
+            <h2 class="text-2xl font-bold text-white mb-4">Provide Contact Details</h2>
+            <input type="hidden" name="teamId">
+            <p class="text-gray-400 mb-4">Please provide either your email or phone number so the team creator can contact you.</p>
+            <div class="mb-4">
+                <label class="block text-gray-400 mb-1">Email (Optional)</label>
+                <input type="email" name="email" class="w-full bg-gray-700 rounded p-2 focus:outline-none ring-blue-500 focus:ring-2">
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-400 mb-1">Phone Number (Optional)</label>
+                <input type="tel" name="phone" class="w-full bg-gray-700 rounded p-2 focus:outline-none ring-blue-500 focus:ring-2">
+            </div>
+            <p class="text-red-400 text-sm mb-4 h-5" id="contact-error"></p>
+            <div class="flex justify-end space-x-4">
+                <button type="button" class="modal-cancel-btn bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-md">Cancel</button>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md">Express Interest</button>
+            </div>
+        </form>
+    </div>
+
+
+    <!-- Helper Bot -->
+    <div id="helper-bot-container" class="fixed bottom-0 right-8 w-80 bg-gray-800 border-t border-l border-r border-gray-700 rounded-t-lg shadow-2xl z-40">
+        <div class="p-4">
+            <h3 class="font-bold text-white mb-2">How can I help you?</h3>
+            <p class="text-xs text-gray-400 mb-4">Quickly navigate to any of our key resource pages.</p>
+            <div id="helper-bot-links" class="grid grid-cols-2 gap-2 text-center">
+                <!-- Bot links will be inserted here -->
+            </div>
+        </div>
+    </div>
+    <button id="helper-bot-trigger" class="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-3 shadow-lg z-50">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 16.663c.527-.527.928-1.146 1.2-1.813M14.337 16.663c-.527-.527-.928-1.146-1.2-1.813M12 21c-4.97 0-9-4.03-9-9s4.03-9 9-9 9 4.03 9 9-4.03 9-9 9z"></path></svg>
+    </button>
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, collection, getDocs, getDoc, doc, addDoc, setDoc, updateDoc, deleteDoc, query, where, onSnapshot, serverTimestamp, arrayUnion, arrayRemove, increment, orderBy, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB6LZQRoUIsttz3rgTL3u7WzC6sSLCu8bY",
+            authDomain: "quantum-e51b0.firebaseapp.com",
+            projectId: "quantum-e51b0",
+            storageBucket: "quantum-e51b0.appspot.com",
+            messagingSenderId: "430851021652",
+            appId: "1:430851021652:web:9b81ae3fbe26935ce646c1",
+            measurementId: "G-5EEEH8093D"
+        };
+        
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // App state
+        let currentUser = null;
+        let users = {}; // Local cache for user data
+        let localNotifications = []; // Local cache for notifications
+        let unsubscribeNotifications = null; // To stop listening when user logs out
+        let currentPageUnsubscribe = null; // To manage real-time listeners
+
+        // Static categories based on user's request
+        const staticCategories = [
+            { id: "hardware-platforms", name: "Hardware & Platforms", description: "Discussions on quantum hardware, simulators, and development platforms.", color: "border-purple-500" },
+            { id: "quantum-algorithms", name: "Quantum Algorithms", description: "Explore algorithms like Shor's, Grover's, and new research.", color: "border-indigo-500" },
+            { id: "quantum-cryptography", name: "Quantum Cryptography", description: "Topics on quantum key distribution (QKD) and post-quantum cryptography.", color: "border-blue-500" },
+            { id: "quantum-ml", name: "Quantum Machine Learning", description: "Hybrid quantum-classical algorithms and quantum neural networks.", color: "border-green-500" },
+            { id: "community", name: "Community Discussions", description: "General chat and community-led conversations.", color: "border-yellow-500" }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+        
+            // --- VARIABLE AND CONSTANT DECLARATIONS ---
+            const pageElements = {
+                home: document.getElementById('homePage'),
+                questionList: document.getElementById('questionListPage'),
+                questionDetail: document.getElementById('questionDetailPage'),
+                facultyCorner: document.getElementById('facultyCornerPage'),
+                researchPapers: document.getElementById('researchPapersPage'),
+                researchPaperDetail: document.getElementById('researchPaperDetailPage'),
+                docs: document.getElementById('docsPage'),
+                docDetail: document.getElementById('docDetailPage'),
+                news: document.getElementById('newsPage'),
+                newsDetail: document.getElementById('newsDetailPage'),
+                team: document.getElementById('teamPage'),
+                members: document.getElementById('membersPage'),
+                userProfile: document.getElementById('userProfilePage'),
+                activity: document.getElementById('activityPage'),
+                messages: document.getElementById('messagesPage'),
+                announcements: document.getElementById('announcementDetailPage'),
+                announcementDetail: document.getElementById('announcementDetailPage'),
+                messageDetail: document.getElementById('messageDetailPage'),
+                searchResults: document.getElementById('searchResultsPage'),
+                challenges: document.getElementById('challengesPage'),
+                challengeDetail: document.getElementById('challengeDetailPage'),
+                leaderboard: document.getElementById('leaderboardPage'),
+                projects: document.getElementById('projectsPage'),
+                projectDetail: document.getElementById('projectDetailPage'),
+                settings: document.getElementById('settingsPage')
+            };
+            const settings = {
+                theme: 'dark'
+            };
+            let pageHistory = [{page: 'home', id: null}];
+
+            // --- AUTHENTICATION ---
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    const userDocRef = doc(db, "users", user.uid);
+                    const userDocSnap = await getDoc(userDocRef);
+                    if (userDocSnap.exists()) {
+                        currentUser = { uid: user.uid, ...userDocSnap.data() };
+                        // Check for new day and update days visited
+                        const today = new Date().toDateString();
+                        if (currentUser.lastVisitDate !== today) {
+                            await updateDoc(userDocRef, {
+                                daysVisited: increment(1),
+                                lastVisitDate: today
+                            });
+                            currentUser.daysVisited++;
+                            currentUser.lastVisitDate = today;
+                        }
+
+                        // Check if it's a first-time login for this session
+                        if (currentUser.name.startsWith("User-")) {
+                            document.getElementById('firstLoginModal').classList.replace('hidden', 'flex');
+                        }
+                        
+                    } else {
+                        const newUserProfile = {
+                            name: `User-${user.uid.substring(0, 5)}`,
+                            email: user.email,
+                            phone: '', // Added phone field
+                            joinDate: serverTimestamp(),
+                            avatar: `https://placehold.co/64x64/7c3aed/ffffff?text=${user.email[0].toUpperCase()}`,
+                            level: 'Beginner',
+                            points: 0,
+                            isMentor: false,
+                            daysVisited: 1,
+                            lastVisitDate: new Date().toDateString(),
+                            likesGiven: 0,
+                            likesReceived: 0,
+                            topicsCreated: 0,
+                            postsCreated: 0, 
+                            postsRead: 0, 
+                            completedChallenges: []
+                        };
+                        await setDoc(userDocRef, newUserProfile);
+                        currentUser = { uid: user.uid, ...newUserProfile };
+                        document.getElementById('firstLoginModal').classList.replace('hidden', 'flex');
+                    }
+                    listenForNotifications(currentUser.uid); // Start listening for notifications
+                } else {
+                    currentUser = null;
+                    if (unsubscribeNotifications) {
+                        unsubscribeNotifications();
+                        unsubscribeNotifications = null;
+                    }
+                }
+                updateUserAuthUI();
+                navigateTo('home');
+            });
+
+
+            function updateUserAuthUI() {
+                const container = document.getElementById('user-auth-container');
+                if (currentUser) {
+                    container.innerHTML = `
+                        <div class="relative notification-bell-container">
+                            <button id="notification-bell-btn" class="text-gray-400 hover:text-white p-2 rounded-full relative">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                                <span id="notification-dot" class="notification-dot hidden"></span>
+                            </button>
+                            <div id="notifications-dropdown" class="bg-gray-800 border border-gray-700 rounded-md shadow-lg hidden">
+                                <!-- Notifications will be rendered here -->
+                            </div>
+                        </div>
+                        <img src="${currentUser.avatar}" class="w-8 h-8 rounded-full cursor-pointer nav-link" data-page="userProfile" data-id="${currentUser.uid}" alt="${currentUser.name}">
+                        <button id="logout-btn" class="text-sm text-gray-400 hover:text-white hidden sm:block">Logout</button>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <button id="login-btn" class="text-sm font-semibold text-white hover:underline">Log In</button>
+                        <button id="signup-btn" class="bg-gray-700 hover:bg-gray-600 text-white text-sm font-semibold py-2 px-3 rounded-md">Sign Up</button>
+                    `;
+                }
+            }
+            
+            // --- NOTIFICATION FUNCTIONS ---
+            function listenForNotifications(userId) {
+                const q = query(collection(db, "notifications"), where("recipientId", "==", userId));
+
+                unsubscribeNotifications = onSnapshot(q, (snapshot) => {
+                    let notifications = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    notifications.sort((a, b) => {
+                        const dateA = a.createdAt?.toDate() || new Date(0);
+                        const dateB = b.createdAt?.toDate() || new Date(0);
+                        return dateB - dateA;
+                    });
+                    
+                    localNotifications = notifications;
+                    updateNotificationsUI(localNotifications);
+                }, (error) => {
+                    console.error("Error in notification listener:", error);
+                });
+            }
+
+            function updateNotificationsUI(notifications) {
+                const dropdown = document.getElementById('notifications-dropdown');
+                const dot = document.getElementById('notification-dot');
+                if (!dropdown || !dot) return;
+
+                const unreadCount = notifications.filter(n => !n.isRead).length;
+                dot.classList.toggle('hidden', unreadCount === 0);
+                
+                if (notifications.length === 0) {
+                    dropdown.innerHTML = `<div class="p-4 text-center text-gray-400">No notifications yet.</div>`;
+                } else {
+                    dropdown.innerHTML = notifications.map(n => {
+                        return `
+                        <a href="#" class="block p-3 border-b border-gray-700 hover:bg-gray-700 nav-link notification-item ${!n.isRead ? 'unread' : ''}" data-page="${n.link.page}" data-id="${n.link.id}" data-notification-id="${n.id}">
+                            <p class="text-sm text-gray-200">${n.text}</p>
+                            <p class="text-xs text-gray-500 mt-1">${n.createdAt ? new Date(n.createdAt.toDate()).toLocaleString() : 'Just now'}</p>
+                        </a>
+                        `;
+                    }).join('');
+                }
+            }
+
+            async function markNotificationsAsRead() {
+                const unreadNotifications = localNotifications.filter(n => !n.isRead);
+                if (unreadNotifications.length === 0) return;
+
+                const batch = writeBatch(db);
+                unreadNotifications.forEach(notification => {
+                    const notificationRef = doc(db, "notifications", notification.id);
+                    batch.update(notificationRef, { isRead: true });
+                });
+                await batch.commit();
+            }
+            
+            async function createNotification(recipientId, senderId, type, text, link) {
+                if (recipientId === senderId) return;
+
+                await addDoc(collection(db, "notifications"), {
+                    recipientId,
+                    senderId,
+                    type,
+                    text,
+                    link,
+                    isRead: false,
+                    createdAt: serverTimestamp()
+                });
+            }
+
+            // --- DATA FETCHING FUNCTIONS ---
+            async function fetchAllData() {
+                const usersSnapshot = await getDocs(collection(db, "users"));
+                users = {};
+                usersSnapshot.forEach(doc => {
+                    users[doc.id] = { id: doc.id, ...doc.data() };
+                });
+            }
+
+            // --- RENDER FUNCTIONS ---
+            async function renderHomePage(filterType = 'latest') {
+                const homePage = pageElements.home;
+                const sidebarCategories = document.getElementById('sidebar-categories');
+                
+                // Fetch questions once for initial render of top topics and categories
+                const questionsQuery = query(collection(db, "questions"), orderBy("createdAt", "desc"));
+                const questionsSnapshot = await getDocs(questionsQuery);
+                let questions = questionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                const sortedByReplies = [...questions].sort((a, b) => (b.answers?.length || 0) - (a.answers?.length || 0));
+                const topQuestions = sortedByReplies.slice(0, 4);
+
+                homePage.innerHTML = `
+                    <div class="mb-8">
+                        <h2 class="text-xl font-bold text-white mb-4">Trending Topics</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            ${topQuestions.map(q => `
+                                <a href="#" class="bg-gray-900/50 p-4 rounded-md hover:bg-gray-700/50 nav-link" data-page="questionDetail" data-id="${q.id}">
+                                    <h3 class="font-semibold text-white truncate">${q.title}</h3>
+                                    <div class="text-xs text-gray-400 mt-2 flex items-center space-x-4">
+                                        <span>${q.answers?.length || 0} replies</span>
+                                    </div>
+                                </a>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-6 text-gray-400 border-b border-gray-700 mb-4">
+                        <button class="py-2 leaderboard-link ${filterType === 'latest' ? 'active' : ''}" data-filter="latest">Latest</button>
+                    </div>
+
+                    <div class="bg-gray-900/50 rounded-md p-4">
+                         <h2 class="text-xl font-bold text-white mb-4">All Questions & Discussions</h2>
+                        <div id="all-questions-feed" class="max-h-[60vh] overflow-y-auto pr-2">
+                            <!-- Questions will be rendered here -->
+                        </div>
+                    </div>
+
+                    <div id="category-grid" class="mt-8 space-y-4"></div>
+                `;
+
+                // Set up real-time listener for the main question feed
+                const allQuestionsFeed = document.getElementById('all-questions-feed');
+                currentPageUnsubscribe = onSnapshot(questionsQuery, (snapshot) => {
+                    const realtimeQuestions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    allQuestionsFeed.innerHTML = realtimeQuestions.map(q => {
+                        const author = users[q.authorId];
+                        return `
+                        <div class="bg-gray-800 p-4 rounded-md mb-4">
+                            <h3 class="font-semibold text-white"><a href="#" class="nav-link hover:underline" data-page="questionDetail" data-id="${q.id}">${q.title}</a></h3>
+                            <p class="text-xs text-gray-400 mt-1">Asked by ${author?.name || 'Unknown'}</p>
+                            <div class="mt-3 border-t border-gray-700 pt-3 space-y-3">
+                            ${(q.answers || []).slice(0,2).map(ans => {
+                                const ansAuthor = users[ans.by];
+                                if (!ansAuthor) return `<div class="text-xs"><strong class="text-blue-400">Unknown User:</strong> <span class="text-gray-300">${ans.body}</span></div>`
+                                return `<div class="text-xs"><strong class="text-blue-400">${ansAuthor.name}:</strong> <span class="text-gray-300">${ans.body}</span></div>`
+                            }).join('')}
+                            ${(q.answers?.length || 0) > 2 ? `<a href="#" class="text-xs text-blue-400 hover:underline nav-link" data-page="questionDetail" data-id="${q.id}">View ${(q.answers.length) - 2} more replies...</a>` : ''}
+                            ${(q.answers?.length || 0) === 0 ? `<p class="text-xs text-gray-500">No answers yet.</p>` : ''}
+                            </div>
+                        </div>
+                        `
+                    }).join('');
+                });
+                
+                const categoryGrid = document.getElementById('category-grid');
+                const categories = staticCategories;
+
+                categoryGrid.innerHTML = `<h2 class="text-xl font-bold text-white mb-4">Categories</h2><div class="flex justify-between items-center mb-4 text-gray-400 font-semibold"><span class="w-2/3">Category</span><span class="w-1/3">Latest Topic</span></div>`;
+                sidebarCategories.innerHTML = '';
+
+                categories.forEach(cat => {
+                    const catColor = cat.color || 'border-gray-500';
+                    const catQuestions = questions.filter(q => q.catId === cat.id);
+                    const latestTopic = catQuestions.sort((a,b) => (b.createdAt?.toDate() || 0) - (a.createdAt?.toDate() || 0))[0];
+                    sidebarCategories.insertAdjacentHTML('beforeend', `<a href="#" class="flex items-center px-3 py-2 rounded-md hover:bg-gray-700 nav-link sidebar-link" data-page="questionList" data-id="${cat.id}"><span class="w-3 h-3 mr-3 rounded-sm ${catColor.replace('border-', 'bg-')}"></span>${cat.name}</a>`);
+                    categoryGrid.insertAdjacentHTML('beforeend', `
+                        <div class="category-box ${catColor} bg-gray-900/50 rounded-md flex flex-col sm:flex-row">
+                            <div class="flex-1 p-4 w-full sm:w-2/3">
+                                <a href="#" class="text-lg font-bold text-white hover:underline nav-link" data-page="questionList" data-id="${cat.id}">${cat.name}</a>
+                                <p class="text-gray-400 mt-1">${cat.description}</p>
+                            </div>
+                            <div class="w-full sm:w-1/3 p-4 border-t sm:border-t-0 sm:border-l border-gray-700">
+                                 ${latestTopic ? `<a href="#" class="flex items-center p-2 rounded-md topic-link nav-link text-gray-200 hover:text-white" data-page="questionDetail" data-id="${latestTopic.id}">
+                                        <svg class="w-4 h-4 mr-2 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path></svg>
+                                        <span class="truncate">${latestTopic.title}</span>
+                                    </a>` : '<span class="text-gray-500 text-sm">No topics yet</span>'}
+                            </div>
+                        </div>`);
+                });
+            }
+
+            function renderQuestionListPage(categoryId) {
+                const page = pageElements.questionList;
+                const category = staticCategories.find(cat => cat.id === categoryId);
+                if (!category) {
+                    page.innerHTML = `<h1 class="text-2xl font-bold text-red-500">Category not found</h1>`;
+                    return;
+                }
+
+                const q = query(collection(db, "questions"), where("catId", "==", categoryId));
+                currentPageUnsubscribe = onSnapshot(q, (querySnapshot) => {
+                    const questions = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                    page.innerHTML = `
+                        <div class="mb-6">
+                            <h1 class="text-3xl font-bold text-white">${category.name}</h1>
+                            <p class="text-gray-400 mt-1">${category.description}</p>
+                        </div>
+                        <div class="space-y-4">
+                            ${questions.length > 0 ? questions.map(question => {
+                                const author = users[question.authorId];
+                                return `
+                                <a href="#" class="block bg-gray-900/50 p-4 rounded-md hover:bg-gray-700/50 nav-link" data-page="questionDetail" data-id="${question.id}">
+                                    <div class="flex items-center">
+                                        <img src="${author?.avatar || 'https://placehold.co/40x40'}" alt="${author?.name || 'Unknown'}" class="w-10 h-10 rounded-full mr-4">
+                                        <div class="flex-1">
+                                            <h3 class="font-semibold text-white">${question.title}</h3>
+                                            <p class="text-xs text-gray-400 mt-1">Asked by ${author?.name || 'Unknown'}</p>
+                                        </div>
+                                        <div class="text-center w-20">
+                                            <div class="font-bold text-white">${question.answers?.length || 0}</div>
+                                            <div class="text-xs text-gray-400">replies</div>
+                                        </div>
+                                    </div>
+                                </a>
+                                `
+                            }).join('') : '<p class="text-gray-400">No questions in this category yet.</p>'}
+                        </div>
+                    `;
+                });
+            }
+
+            function renderQuestionDetailPage(questionId) {
+                const questionDocRef = doc(db, "questions", questionId);
+                
+                currentPageUnsubscribe = onSnapshot(questionDocRef, (docSnap) => {
+                    if (!docSnap.exists()) {
+                        pageElements.questionDetail.innerHTML = `<h1 class="text-2xl font-bold text-red-500">Question not found</h1>`;
+                        return;
+                    }
+                    const q = { id: docSnap.id, ...docSnap.data() };
+                    const author = users[q.authorId];
+                    
+                    const answersHTML = (q.answers || []).map((ans, index) => {
+                        const ansAuthor = users[ans.by];
+                        if (!ansAuthor) return '';
+                        return `
+                        <div class="flex space-x-4" data-answer-index="${index}">
+                            <img src="${ansAuthor.avatar}" alt="${ansAuthor.name}" class="w-12 h-12 rounded-full">
+                            <div class="flex-1 bg-gray-900/50 p-4 rounded-md">
+                                <p>${ans.body}</p>
+                                <div class="flex items-center justify-between mt-4 text-gray-400">
+                                    <div class="flex items-center space-x-4">
+                                        <button class="reply-to-answer-btn hover:text-white" data-username="${ansAuthor.name}">Reply</button>
+                                        <button class="like-btn flex items-center space-x-1 hover:text-red-400 ${currentUser && ans.likes?.includes(currentUser.uid) ? 'liked' : ''}" data-question-id="${q.id}" data-answer-index="${index}">
+                                            <i class="fa-heart ${currentUser && ans.likes?.includes(currentUser.uid) ? 'fas' : 'far'}"></i>
+                                            <span>${ans.likes?.length || 0}</span>
+                                        </button>
+                                    </div>
+                                    <div>- ${ansAuthor.name}</div>
+                                </div>
+                                <div class="reply-form-container mt-4 hidden"></div>
+                            </div>
+                        </div>`;
+                    }).join('');
+
+                    pageElements.questionDetail.innerHTML = `
+                        <h1 class="text-3xl font-bold text-white mb-4">${q.title}</h1>
+                        <div class="space-y-6">
+                            <div class="flex space-x-4">
+                                <img src="${author?.avatar}" alt="${author?.name}" class="w-12 h-12 rounded-full">
+                                <div class="flex-1 bg-gray-900/50 p-4 rounded-md">
+                                    <p>${q.body}</p>
+                                    ${currentUser && q.authorId === currentUser.uid ? `
+                                        <div class="mt-4 text-right">
+                                            <button class="edit-question-btn text-xs text-blue-400 hover:underline mr-4" data-id="${q.id}">Edit</button>
+                                            <button class="delete-question-btn text-xs text-red-400 hover:underline" data-id="${q.id}">Delete</button>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                            ${answersHTML}
+                            ${currentUser ? `<div class="flex space-x-4"><img src="${currentUser.avatar}" alt="Your avatar" class="w-12 h-12 rounded-full"><div class="flex-1 bg-gray-900/50 p-4 rounded-md"><textarea id="answer-textarea" class="w-full bg-gray-700 text-white rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500" rows="5" placeholder="Type your reply here..."></textarea><div class="text-right mt-2"><button class="post-answer-btn bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md" data-id="${q.id}">Reply</button></div></div></div>` : `<div class="text-center text-gray-400 bg-gray-900/50 p-4 rounded-md">Please <button class="font-bold text-white hover:underline" id="login-from-reply-btn">log in</button> to post a reply.</div>`}
+                        </div>`;
+                });
+            }
+            
+            function renderMembersPage() {
+                const page = pageElements.members;
+                const q = query(collection(db, "users"));
+                currentPageUnsubscribe = onSnapshot(q, (snapshot) => {
+                    const memberList = snapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+                    const sortedMembers = memberList.sort((a,b) => (b.points || 0) - (a.points || 0));
+                    page.innerHTML = `
+                        <h1 class="text-2xl font-bold text-white mb-4">Community Members</h1>
+                        <div class="space-y-4">
+                        ${sortedMembers.map(member => `
+                            <div class="bg-gray-900/50 p-4 rounded-md flex items-center space-x-4">
+                                <a href="#" class="flex items-center flex-1 nav-link" data-page="userProfile" data-id="${member.id}">
+                                    <img src="${member.avatar}" class="w-12 h-12 rounded-full">
+                                    <div class="ml-4 flex-1">
+                                        <h3 class="text-lg font-bold text-white">${member.name}</h3>
+                                        <p class="text-gray-400">${member.level || 'Member'}</p>
+                                    </div>
+                                </a>
+                                <span class="text-sm font-semibold text-white">${member.points || 0} Points</span>
+                            </div>
+                        `).join('')}
+                        </div>
+                    `;
+                });
+            }
+
+            async function renderUserProfilePage(userId) {
+                const userDocRef = doc(db, "users", userId);
+                const userDocSnap = await getDoc(userDocRef);
+
+                if (!userDocSnap.exists()) {
+                    pageElements.userProfile.innerHTML = `<h1 class="text-2xl font-bold text-red-500">User Not Found</h1>`;
+                    return;
+                }
+                const user = { id: userDocSnap.id, ...userDocSnap.data() };
+                const isCurrentUserProfile = currentUser && user.id === currentUser.uid;
+                
+                pageElements.userProfile.innerHTML = `
+                    <div class="bg-gray-900/50 rounded-md">
+                        <div class="h-32 bg-blue-800 rounded-t-md"></div>
+                        <div class="p-6">
+                            <div class="flex items-end -mt-16">
+                                <img src="${user.avatar}" alt="${user.name}" class="w-24 h-24 rounded-full border-4 border-gray-800">
+                                <div class="ml-4 flex-1">
+                                    <h2 class="text-2xl font-bold text-white">${user.name}</h2>
+                                    <p class="text-gray-400">${user.level}</p>
+                                </div>
+                                ${isCurrentUserProfile ? `<button id="edit-profile-btn" class="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-md">Edit Profile</button>` : ''}
+                            </div>
+                            <div class="mt-6 border-t border-gray-700 pt-6">
+                                <p class="text-gray-300">${user.description || 'No description provided.'}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2 space-y-6">
+                             <div class="bg-gray-900/50 rounded-md p-6">
+                                <h3 class="text-lg font-bold text-white mb-4">Summary</h3>
+                                <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
+                                    <div class="text-center"><div class="text-xl font-bold text-white">${user.daysVisited || 0}</div><div class="text-xs text-gray-400 uppercase">days visited</div></div>
+                                    <div class="text-center"><div class="text-xl font-bold text-white">${user.topicsViewed || 0}</div><div class="text-xs text-gray-400 uppercase">topics viewed</div></div>
+                                    <div class="text-center"><div class="text-xl font-bold text-white">${user.likesGiven || 0}</div><div class="text-xs text-gray-400 uppercase">likes given</div></div>
+                                    <div class="text-center"><div class="text-xl font-bold text-white">${user.likesReceived || 0}</div><div class="text-xs text-gray-400 uppercase">likes received</div></div>
+                                    <div class="text-center"><div class="text-xl font-bold text-white">${user.topicsCreated || 0}</div><div class="text-xs text-gray-400 uppercase">topics created</div></div>
+                                    <div class="text-center"><div class="text-xl font-bold text-white">${user.postsCreated || 0}</div><div class="text-xs text-gray-400 uppercase">posts created</div></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-6">
+                            <div class="bg-gray-900/50 rounded-md p-6">
+                                <h3 class="text-lg font-bold text-white mb-4">Details</h3>
+                                <ul class="space-y-2 text-gray-300">
+                                    <li><strong class="font-semibold text-gray-400">Role:</strong> ${user.isMentor ? 'Mentor' : 'Student'}</li>
+                                    <li><strong class="font-semibold text-gray-400">College:</strong> ${user.collegeName || 'N/A'}</li>
+                                    <li><strong class="font-semibold text-gray-400">Department:</strong> ${user.department || 'N/A'}</li>
+                                    <li><strong class="font-semibold text-gray-400">Year:</strong> ${user.year || 'N/A'}</li>
+                                    <li><strong class="font-semibold text-gray-400">Mentor:</strong> ${user.mentorName || 'N/A'}</li>
+                                    <li><strong class="font-semibold text-gray-400">Email:</strong> ${user.email || 'N/A'}</li>
+                                    <li><strong class="font-semibold text-gray-400">Phone:</strong> ${user.phone || 'N/A'}</li>
+                                    <li><strong class="font-semibold text-gray-400">Collaboration:</strong> <span class="${user.wantsToCollaborate ? 'text-green-400' : 'text-red-400'}">${user.wantsToCollaborate ? 'Open to collaboration' : 'Not looking'}</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>`;
+            }
+
+            function renderFacultyCornerPage() {
+                const page = pageElements.facultyCorner;
+                const q = query(collection(db, "users"), where("isMentor", "==", true));
+                currentPageUnsubscribe = onSnapshot(q, (querySnapshot) => {
+                    const mentors = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    page.innerHTML = `
+                        <h1 class="text-3xl font-bold text-white mb-6">Faculty Corner</h1>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            ${mentors.length > 0 ? mentors.map(mentor => `
+                                <div class="bg-gray-900/50 rounded-lg p-6 flex flex-col">
+                                    <div class="flex items-center mb-4">
+                                        <img src="${mentor.avatar}" alt="${mentor.name}" class="w-16 h-16 rounded-full mr-4">
+                                        <div>
+                                            <h3 class="text-xl font-bold text-white">${mentor.name}</h3>
+                                            <p class="text-gray-400">${mentor.department || 'No Department'}</p>
+                                        </div>
+                                    </div>
+                                    <p class="text-gray-300 flex-1 mb-4">${mentor.description || 'No description available.'}</p>
+                                    <div class="mt-auto flex space-x-2">
+                                        <a href="#" class="flex-1 text-center bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-md nav-link" data-page="userProfile" data-id="${mentor.id}">View Profile</a>
+                                    </div>
+                                </div>
+                            `).join('') : '<p class="text-gray-400 col-span-full">No mentors have registered yet.</p>'}
+                        </div>
+                    `;
+                });
+            }
+
+            function renderResearchPapersPage() {
+                const page = pageElements.researchPapers;
+                const q = query(collection(db, "papers"));
+                currentPageUnsubscribe = onSnapshot(q, (papersSnapshot) => {
+                    const papers = papersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                    page.innerHTML = `
+                        <div class="flex justify-between items-center mb-6">
+                            <h1 class="text-3xl font-bold text-white">Research Papers</h1>
+                            <button id="upload-paper-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md">Upload Paper</button>
+                        </div>
+                        <div class="space-y-4">
+                            ${papers.length > 0 ? papers.map(paper => {
+                                const author = users[paper.authorId];
+                                return `
+                                <a href="#" class="block bg-gray-900/50 p-4 rounded-md hover:bg-gray-700/50 nav-link" data-page="researchPaperDetail" data-id="${paper.id}">
+                                    <h3 class="font-semibold text-white">${paper.title}</h3>
+                                    <p class="text-xs text-gray-400 mt-1">By ${author?.name || 'Unknown'} on ${new Date(paper.publishDate).toLocaleDateString()}</p>
+                                </a>
+                                `
+                            }).join('') : '<p class="text-gray-400">No research papers have been uploaded yet.</p>'}
+                        </div>
+                    `;
+                });
+            }
+
+            function renderResearchPaperDetailPage(paperId) {
+                const page = pageElements.researchPaperDetail;
+                const paperDocRef = doc(db, "papers", paperId);
+                
+                currentPageUnsubscribe = onSnapshot(paperDocRef, (docSnap) => {
+                    if (!docSnap.exists()) {
+                        page.innerHTML = `<h1 class="text-2xl font-bold text-red-500">Paper not found</h1>`;
+                        return;
+                    }
+
+                    const paper = { id: docSnap.id, ...docSnap.data() };
+                    const author = users[paper.authorId];
+
+                    const commentsHTML = (paper.comments || []).map((comment) => {
+                        const commentAuthor = users[comment.by];
+                        if (!commentAuthor) return '';
+                        return `
+                        <div class="flex space-x-4">
+                            <img src="${commentAuthor.avatar}" alt="${commentAuthor.name}" class="w-10 h-10 rounded-full">
+                            <div class="flex-1 bg-gray-800 p-3 rounded-md">
+                                <p class="font-semibold text-white">${commentAuthor.name}</p>
+                                <p class="text-gray-300">${comment.body}</p>
+                            </div>
+                        </div>`;
+                    }).join('');
+
+                    page.innerHTML = `
+                        <div class="bg-gray-900/50 rounded-lg p-8">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h1 class="text-3xl font-bold text-white mb-2">${paper.title}</h1>
+                                    <div class="text-gray-400 mb-6">
+                                        <p>By <a href="#" class="text-blue-400 hover:underline nav-link" data-page="userProfile" data-id="${paper.authorId}">${author?.name || 'Unknown'}</a></p>
+                                        <p>Published on: ${new Date(paper.publishDate).toLocaleDateString()}</p>
+                                        ${paper.mentor ? `<p>Mentor: ${paper.mentor}</p>` : ''}
+                                    </div>
+                                </div>
+                                ${currentUser && paper.authorId === currentUser.uid ? `
+                                    <div class="flex space-x-2">
+                                        <button class="edit-paper-btn text-sm text-blue-400 hover:underline" data-id="${paper.id}">Edit</button>
+                                        <button class="delete-paper-btn text-sm text-red-400 hover:underline" data-id="${paper.id}">Delete</button>
+                                    </div>
+                                ` : ''}
+                            </div>
+                            <div class="prose prose-invert max-w-none text-gray-300 whitespace-pre-wrap">${paper.content}</div>
+                        </div>
+
+                        <div class="mt-8">
+                            <h2 class="text-2xl font-bold text-white mb-4">Discussion</h2>
+                            <div class="space-y-4 mb-6">
+                                ${commentsHTML || '<p class="text-gray-400">No comments yet. Start the discussion!</p>'}
+                            </div>
+                            ${currentUser ? `
+                                <div class="flex space-x-4">
+                                    <img src="${currentUser.avatar}" alt="Your avatar" class="w-12 h-12 rounded-full">
+                                    <div class="flex-1">
+                                        <textarea id="paper-comment-textarea" class="w-full bg-gray-700 text-white rounded-md p-2" rows="3" placeholder="Add to the discussion..."></textarea>
+                                        <div class="text-right mt-2">
+                                            <button class="post-paper-comment-btn bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md" data-id="${paper.id}">Post Comment</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ` : `<div class="text-center text-gray-400 bg-gray-900/50 p-4 rounded-md">Please <button class="font-bold text-white hover:underline" id="login-btn">log in</button> to join the discussion.</div>`}
+                        </div>
+                    `;
+                });
+            }
+
+            function renderDocsPage() {
+                const page = pageElements.docs;
+                const q = query(collection(db, "docs"));
+                currentPageUnsubscribe = onSnapshot(q, (docsSnapshot) => {
+                    const docs = docsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    page.innerHTML = `
+                        <div class="flex justify-between items-center mb-6">
+                            <h1 class="text-3xl font-bold text-white">Docs</h1>
+                            <button id="upload-doc-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md">Upload Content</button>
+                        </div>
+                        <div class="space-y-4">
+                            ${docs.length > 0 ? docs.map(doc => {
+                                const author = users[doc.authorId];
+                                return `
+                                <div class="bg-gray-900/50 p-4 rounded-md flex justify-between items-center">
+                                    <a href="#" class="flex-1 nav-link" data-page="docDetail" data-id="${doc.id}">
+                                        <h3 class="font-semibold text-white">${doc.title}</h3>
+                                        <p class="text-xs text-gray-400 mt-1">By ${author?.name || 'Unknown'}</p>
+                                    </a>
+                                    ${currentUser && doc.authorId === currentUser.uid ? `<button class="delete-doc-btn text-sm text-red-400 hover:underline" data-id="${doc.id}">Delete</button>` : ''}
+                                </div>`
+                            }).join('') : '<p class="text-gray-400">No learning content has been uploaded yet.</p>'}
+                        </div>
+                    `;
+                });
+            }
+
+            async function renderDocDetailPage(docId) {
+                const page = pageElements.docDetail;
+                const docRef = doc(db, "docs", docId);
+                const docSnap = await getDoc(docRef);
+                if (!docSnap.exists()) {
+                    page.innerHTML = `<h1 class="text-2xl font-bold text-red-500">Document not found</h1>`;
+                    return;
+                }
+                const docData = docSnap.data();
+                const author = users[docData.authorId];
+                page.innerHTML = `
+                    <div class="bg-gray-900/50 rounded-lg p-8">
+                        <h1 class="text-3xl font-bold text-white mb-2">${docData.title}</h1>
+                        <p class="text-gray-400 mb-6">By <a href="#" class="text-blue-400 hover:underline nav-link" data-page="userProfile" data-id="${docData.authorId}">${author?.name || 'Unknown'}</a></p>
+                        <div class="prose prose-invert max-w-none text-gray-300 whitespace-pre-wrap">${docData.content}</div>
+                    </div>
+                `;
+            }
+
+            function renderNewsPage() {
+                const page = pageElements.news;
+                const q = query(collection(db, "news"));
+                currentPageUnsubscribe = onSnapshot(q, (newsSnapshot) => {
+                    const newsItems = newsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    page.innerHTML = `
+                        <div class="flex justify-between items-center mb-6">
+                            <h1 class="text-3xl font-bold text-white">News</h1>
+                            <button id="post-news-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md">Post News</button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            ${newsItems.length > 0 ? newsItems.map((item) => {
+                                const author = users[item.authorId];
+                                const shortContent = item.content ? item.content.substring(0, 150) + '...' : '';
+                                let thumbnailHtml = '';
+                                if (item.imageUrl) {
+                                    thumbnailHtml = `<img src="${item.imageUrl}" alt="${item.title}" class="w-full h-48 object-cover">`;
+                                } else {
+                                    thumbnailHtml = `
+                                        <div class="glitter-thumbnail w-full h-48 flex items-center justify-center p-4 text-center">
+                                            <div>
+                                                <h3 class="font-bold text-white text-xl mb-2">${item.title}</h3>
+                                                <p class="text-gray-400 text-sm">${shortContent}</p>
+                                            </div>
+                                        </div>
+                                    `;
+                                }
+                                return `
+                                <div class="bg-gray-900/50 rounded-lg overflow-hidden flex flex-col news-card">
+                                    ${thumbnailHtml}
+                                    <div class="p-6 flex-1 flex flex-col">
+                                        <h3 class="font-bold text-white text-xl mb-2">${item.title}</h3>
+                                        <p class="text-gray-400 text-sm mb-4 flex-1">${item.shortDescription}</p>
+                                        <div class="flex justify-between items-center mt-auto">
+                                            <a href="#" class="text-blue-400 hover:underline nav-link text-sm" data-page="newsDetail" data-id="${item.id}">Read More</a>
+                                            ${currentUser && item.authorId === currentUser.uid ? `<button class="delete-news-btn text-sm text-red-400 hover:underline" data-id="${item.id}">Delete</button>` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                                `
+                            }).join('') : '<p class="text-gray-400 col-span-full">No news has been posted yet.</p>'}
+                        </div>
+                    `;
+                });
+            }
+            
+            async function renderNewsDetailPage(newsId) {
+                const page = pageElements.newsDetail;
+                const newsRef = doc(db, "news", newsId);
+                const newsSnap = await getDoc(newsRef);
+                if (!newsSnap.exists()) {
+                    page.innerHTML = `<h1 class="text-2xl font-bold text-red-500">News item not found</h1>`;
+                    return;
+                }
+                const newsData = newsSnap.data();
+                const author = users[newsData.authorId];
+                page.innerHTML = `
+                    <div class="bg-gray-900/50 rounded-lg p-8">
+                        ${newsData.imageUrl ? `<img src="${newsData.imageUrl}" alt="${newsData.title}" class="w-full h-auto rounded-lg mb-6">` : ''}
+                        <h1 class="text-3xl font-bold text-white mb-2">${newsData.title}</h1>
+                        <p class="text-gray-400 mb-6">By <a href="#" class="text-blue-400 hover:underline nav-link" data-page="userProfile" data-id="${newsData.authorId}">${author?.name || 'Unknown'}</a></p>
+                        ${newsData.sourceURL ? `<p class="mb-4"><a href="${newsData.sourceURL}" target="_blank" class="text-blue-400 hover:underline">Read original source</a></p>` : ''}
+                        <div class="prose prose-invert max-w-none text-gray-300 whitespace-pre-wrap">${newsData.content}</div>
+                    </div>
+                `;
+            }
+
+            function renderTeamFinderPage() {
+                const page = pageElements.team;
+                const q = query(collection(db, "teams"));
+                currentPageUnsubscribe = onSnapshot(q, (teamsSnapshot) => {
+                    const teams = teamsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    page.innerHTML = `
+                        <div class="flex justify-between items-center mb-6">
+                            <h1 class="text-3xl font-bold text-white">Team Finder</h1>
+                            <button id="create-team-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md">Create a Team</button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            ${teams.length > 0 ? teams.map(team => {
+                                const creator = users[team.creatorId];
+                                const isInterested = currentUser && team.interestedMembers.some(m => m.uid === currentUser.uid);
+                                const isCreator = currentUser && team.creatorId === currentUser.uid;
+                                return `
+                                <div class="bg-gray-900/50 rounded-lg p-6 flex flex-col">
+                                    <h3 class="text-xl font-bold text-white mb-2">${team.projectTitle}</h3>
+                                    <p class="text-sm text-gray-400 mb-4">Created by ${creator?.name || 'Unknown'}</p>
+                                    <p class="text-gray-300 flex-1 mb-4">${team.description}</p>
+                                    <div class="mb-4">
+                                        <h4 class="font-semibold text-white mb-2">Interested Members (${team.interestedMembers.length})</h4>
+                                        <div class="flex flex-wrap gap-2">
+                                            ${team.interestedMembers.map(m => {
+                                                if (isCreator) {
+                                                    // If the current user is the creator, show contact info and make name a link
+                                                    return `<div class="bg-gray-700 text-xs font-semibold px-2 py-1 rounded-full">
+                                                        <a href="#" class="hover:underline nav-link" data-page="userProfile" data-id="${m.uid}">${m.name}</a>
+                                                        ${m.contactInfo?.email ? ` | ${m.contactInfo.email}` : ''}
+                                                        ${m.contactInfo?.phone ? ` | ${m.contactInfo.phone}` : ''}
+                                                    </div>`;
+                                                } else {
+                                                    // Otherwise, only show the name
+                                                    return `<span class="bg-gray-700 text-xs font-semibold px-2 py-1 rounded-full">${m.name}</span>`;
+                                                }
+                                            }).join('') || '<p class="text-xs text-gray-500">No one yet.</p>'}
+                                        </div>
+                                    </div>
+                                    <div class="flex space-x-2 mt-auto">
+                                        ${isCreator ? `<button class="delete-team-btn w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md" data-id="${team.id}">Delete Team</button>` : ''}
+                                        <button class="express-interest-btn w-full ${isInterested || isCreator ? 'bg-gray-600 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'} text-white font-semibold py-2 px-4 rounded-md" data-id="${team.id}" ${isInterested || isCreator ? 'disabled' : ''}>
+                                            ${isCreator ? 'You are the creator' : (isInterested ? 'Interest Expressed' : 'Express Interest')}
+                                        </button>
+                                    </div>
+                                </div>
+                                `
+                            }).join('') : '<p class="text-gray-400 col-span-full">No teams have been created yet. Be the first!</p>'}
+                        </div>
+                    `;
+                });
+            }
+
+            function renderLeaderboardPage() {
+                const page = pageElements.leaderboard;
+                const q = query(collection(db, "users"));
+                currentPageUnsubscribe = onSnapshot(q, (usersSnapshot) => {
+                    const leaderboardData = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    leaderboardData.sort((a, b) => (b.points || 0) - (a.points || 0));
+
+                    page.innerHTML = `
+                        <h1 class="text-3xl font-bold text-white mb-6">Leaderboard</h1>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full bg-gray-900/50 rounded-lg">
+                                <thead>
+                                    <tr class="border-b border-gray-700">
+                                        <th class="text-left p-4">Rank</th>
+                                        <th class="text-left p-4">User</th>
+                                        <th class="text-center p-4">Points</th>
+                                        <th class="text-center p-4">Topics Created</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${leaderboardData.map((entry, index) => `
+                                        <tr class="border-b border-gray-800">
+                                            <td class="p-4 font-bold">${index + 1}</td>
+                                            <td class="p-4 flex items-center">
+                                                <img src="${entry.avatar}" class="w-8 h-8 rounded-full mr-3">
+                                                <span>${entry.name}</span>
+                                            </td>
+                                            <td class="text-center p-4">${entry.points || 0}</td>
+                                            <td class="text-center p-4">${entry.topicsCreated || 0}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                });
+            }
+
+            function renderProjectsPage() {
+                const page = pageElements.projects;
+                const q = query(collection(db, "projects"));
+                currentPageUnsubscribe = onSnapshot(q, (projectsSnapshot) => {
+                    const projects = projectsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                    page.innerHTML = `
+                        <div class="flex justify-between items-center mb-6">
+                            <h1 class="text-3xl font-bold text-white">Community Projects</h1>
+                            <button id="add-project-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md">Add Your Project</button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            ${projects.length > 0 ? projects.map(project => {
+                                 const author = users[project.authorId];
+                                 return `
+                                <div class="bg-gray-900/50 rounded-lg p-6 flex flex-col">
+                                    <h3 class="text-xl font-bold text-white mb-2">${project.title}</h3>
+                                    <p class="text-sm text-gray-400 mb-4">By ${author?.name || 'Unknown'}</p>
+                                    <p class="text-gray-300 flex-1 mb-4">${project.shortDescription}</p>
+                                    <div class="flex flex-wrap gap-2 mb-4">
+                                        ${project.tags.map(tag => `<span class="bg-gray-700 text-xs font-semibold px-2 py-1 rounded-full">${tag}</span>`).join('')}
+                                    </div>
+                                    <a href="#" class="text-blue-400 hover:underline nav-link mt-auto" data-page="projectDetail" data-id="${project.id}">View Details</a>
+                                </div>
+                                `
+                            }).join('') : '<p class="text-gray-400 col-span-full">No projects have been added yet.</p>'}
+                        </div>
+                    `;
+                });
+            }
+
+            async function renderProjectDetailPage(projectId) {
+                const page = pageElements.projectDetail;
+                const projectRef = doc(db, "projects", projectId);
+                const projectSnap = await getDoc(projectRef);
+
+                if (!projectSnap.exists()) {
+                    page.innerHTML = `<h1 class="text-2xl font-bold text-red-500">Project not found</h1>`;
+                    return;
+                }
+                const project = projectSnap.data();
+                const author = users[project.authorId];
+
+                page.innerHTML = `
+                     <div class="bg-gray-900/50 rounded-lg p-8">
+                        <h1 class="text-3xl font-bold text-white mb-2">${project.title}</h1>
+                        <p class="text-gray-400 mb-6">By <a href="#" class="text-blue-400 hover:underline nav-link" data-page="userProfile" data-id="${project.authorId}">${author?.name || 'Unknown'}</a></p>
+                        <div class="mb-6">
+                            <h3 class="font-semibold text-white mb-2">Team Members</h3>
+                            <p class="text-gray-300">${project.teamMembers.join(', ')}</p>
+                        </div>
+                        <div class="mb-6">
+                            <h3 class="font-semibold text-white mb-2">Tags</h3>
+                            <div class="flex flex-wrap gap-2">
+                                ${project.tags.map(tag => `<span class="bg-gray-700 text-xs font-semibold px-2 py-1 rounded-full">${tag}</span>`).join('')}
+                            </div>
+                        </div>
+                        <h3 class="font-semibold text-white mb-2">Full Details</h3>
+                        <div class="prose prose-invert max-w-none text-gray-300 whitespace-pre-wrap">${project.fullDetails}</div>
+                    </div>
+                `;
+            }
+
+            function renderAnnouncementsPage() {
+                const page = pageElements.announcements;
+                const q = query(collection(db, "announcements"));
+                currentPageUnsubscribe = onSnapshot(q, (announcementsSnapshot) => {
+                    const announcements = announcementsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                    page.innerHTML = `
+                        <div class="flex justify-between items-center mb-6">
+                            <h1 class="text-3xl font-bold text-white">Announcements</h1>
+                            ${currentUser?.isMentor ? `<button id="post-announcement-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md">Post Announcement</button>` : ''}
+                        </div>
+                        <div class="space-y-4">
+                            ${announcements.length > 0 ? announcements.map(item => {
+                                const author = users[item.authorId];
+                                return `
+                                <div class="bg-gray-900/50 p-4 rounded-md">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h3 class="font-semibold text-white">${item.title}</h3>
+                                            <p class="text-xs text-gray-400 mt-1">By ${author?.name || 'Unknown'}</p>
+                                        </div>
+                                        ${currentUser && item.authorId === currentUser.uid ? `
+                                        <div class="flex space-x-2 text-xs">
+                                            <button class="edit-announcement-btn text-blue-400 hover:underline" data-id="${item.id}">Edit</button>
+                                            <button class="delete-announcement-btn text-red-400 hover:underline" data-id="${item.id}">Delete</button>
+                                        </div>
+                                        ` : ''}
+                                    </div>
+                                    <p class="text-gray-300 mt-4">${item.content}</p>
+                                </div>`
+                            }).join('') : '<p class="text-gray-400">No announcements have been posted yet.</p>'}
+                        </div>
+                    `;
+                });
+            }
+
+            function renderMessagesPage() {
+                const page = pageElements.messages;
+                if (!currentUser) {
+                    page.innerHTML = `<p class="text-gray-400">Please log in to view your messages.</p>`;
+                    return;
+                }
+                
+                const q = query(collection(db, "conversations"), where("participants", "array-contains", currentUser.uid));
+                currentPageUnsubscribe = onSnapshot(q, (querySnapshot) => {
+                    const conversations = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                    page.innerHTML = `
+                        <h1 class="text-3xl font-bold text-white mb-6">Messages</h1>
+                        <div class="space-y-4">
+                        ${conversations.length > 0 ? conversations.map(convo => {
+                            const otherUserId = convo.participants.find(p => p !== currentUser.uid);
+                            const otherUser = users[otherUserId];
+                            const lastMessage = convo.messages[convo.messages.length - 1];
+                            return `
+                            <a href="#" class="block bg-gray-900/50 p-4 rounded-md hover:bg-gray-700/50 nav-link" data-page="messageDetail" data-id="${convo.id}">
+                                <div class="flex items-center">
+                                    <img src="${otherUser?.avatar}" alt="${otherUser?.name}" class="w-12 h-12 rounded-full mr-4">
+                                    <div class="flex-1">
+                                        <h3 class="font-semibold text-white">${otherUser?.name || 'Unknown User'}</h3>
+                                        <p class="text-sm text-gray-400 truncate">${lastMessage.text}</p>
+                                    </div>
+                                </div>
+                            </a>
+                            `
+                        }).join('') : '<p class="text-gray-400">You have no messages.</p>'}
+                        </div>
+                    `;
+                });
+            }
+
+            function renderMessageDetailPage(conversationId) {
+                const page = pageElements.messageDetail;
+                const conversationRef = doc(db, "conversations", conversationId);
+                
+                currentPageUnsubscribe = onSnapshot(conversationRef, (docSnap) => {
+                    if (!docSnap.exists()) {
+                        page.innerHTML = `<h1 class="text-2xl font-bold text-red-500">Conversation not found.</h1>`;
+                        return;
+                    }
+                    const conversation = { id: docSnap.id, ...docSnap.data() };
+                    const otherUserId = conversation.participants.find(p => p !== currentUser.uid);
+                    const otherUser = users[otherUserId];
+
+                    page.innerHTML = `
+                        <div class="flex flex-col h-[calc(100vh-10rem)]">
+                            <div class="border-b border-gray-700 p-4">
+                                <h2 class="text-xl font-bold text-white">Conversation with ${otherUser?.name || 'Unknown'}</h2>
+                            </div>
+                            <div class="flex-1 overflow-y-auto p-4 space-y-4">
+                                ${conversation.messages.map((msg, index) => {
+                                    const isSender = msg.from === currentUser.uid;
+                                    const author = users[msg.from];
+                                    return `
+                                    <div class="flex items-start gap-3 ${isSender ? 'flex-row-reverse' : ''}">
+                                        <img src="${author?.avatar}" class="w-8 h-8 rounded-full">
+                                        <div class="p-3 rounded-lg ${isSender ? 'bg-blue-600' : 'bg-gray-700'} relative">
+                                            <p>${msg.text}</p>
+                                            ${isSender ? `
+                                                <button class="delete-message-btn absolute -bottom-2 -right-2 text-red-400 hover:text-red-500" data-conversation-id="${conversation.id}" data-message-index="${index}">
+                                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 112 0v6a1 1 0 11-2 0V8z" clip-rule="evenodd"></path></svg>
+                                                </button>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+                                    `
+                                }).join('')}
+                            </div>
+                            <div class="p-4 border-t border-gray-700">
+                                <form id="reply-form" class="flex gap-4">
+                                    <input type="hidden" name="conversationId" value="${conversation.id}">
+                                    <input type="hidden" name="recipientId" value="${otherUserId}">
+                                    <textarea name="replyText" class="flex-1 bg-gray-700 rounded p-2" rows="2" placeholder="Type your reply..."></textarea>
+                                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md">Send</button>
+                                </form>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            function renderChallengeQuestionFields(num) {
+                const container = document.getElementById('challenge-questions-container');
+                if (!container) return;
+                container.innerHTML = '';
+                for (let i = 0; i < num; i++) {
+                    container.innerHTML += `
+                        <div class="border-t border-gray-700 pt-4">
+                            <label class="block text-gray-400 mb-2 font-semibold">Question ${i + 1}</label>
+                            <textarea name="q_${i}_text" class="w-full bg-gray-700 rounded p-2 mb-2" placeholder="Question text" required></textarea>
+                            <input type="text" name="q_${i}_opt_0" class="w-full bg-gray-700 rounded p-2 mb-2" placeholder="Option A" required>
+                            <input type="text" name="q_${i}_opt_1" class="w-full bg-gray-700 rounded p-2 mb-2" placeholder="Option B" required>
+                            <input type="text" name="q_${i}_opt_2" class="w-full bg-gray-700 rounded p-2 mb-2" placeholder="Option C" required>
+                            <input type="text" name="q_${i}_opt_3" class="w-full bg-gray-700 rounded p-2 mb-2" placeholder="Option D" required>
+                            <label class="block text-gray-400 mb-1 text-sm">Correct Answer</label>
+                            <select name="q_${i}_correct" class="w-full bg-gray-700 rounded p-2">
+                                <option value="0">Option A</option>
+                                <option value="1">Option B</option>
+                                <option value="2">Option C</option>
+                                <option value="3">Option D</option>
+                            </select>
+                        </div>
+                    `;
+                }
+            }
+            
+            function renderChallengesPage() {
+                const page = pageElements.challenges;
+                const q = query(collection(db, "challenges"));
+                currentPageUnsubscribe = onSnapshot(q, (challengesSnapshot) => {
+                    const challenges = challengesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                    page.innerHTML = `
+                        <div class="flex justify-between items-center mb-6">
+                            <h1 class="text-3xl font-bold text-white">Challenges</h1>
+                            ${currentUser?.isMentor ? `<button id="create-challenge-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md">Create Challenge</button>` : ''}
+                        </div>
+                        <div class="space-y-4">
+                            ${challenges.length > 0 ? challenges.map(challenge => {
+                                const creator = users[challenge.creatorId];
+                                const hasCompleted = (currentUser?.completedChallenges || []).includes(challenge.id);
+                                const isCreator = currentUser && currentUser.uid === challenge.creatorId;
+
+                                let buttonHTML = '';
+                                if (isCreator) {
+                                    buttonHTML = `<span class="text-xs text-gray-500">You created this</span>`;
+                                } else if (hasCompleted) {
+                                    buttonHTML = `<span class="text-xs text-gray-500">Already taken</span>`;
+                                } else if (currentUser) {
+                                    buttonHTML = `<button class="take-challenge-btn bg-green-600 hover:bg-green-700 text-white text-sm font-semibold py-2 px-3 rounded-md" data-id="${challenge.id}">Take Quiz</button>`;
+                                } else {
+                                    buttonHTML = `<span class="text-xs text-gray-500">Log in to take quiz</span>`;
+                                }
+
+                                return `
+                                <div class="bg-gray-900/50 p-4 rounded-md flex justify-between items-center">
+                                    <div>
+                                        <h3 class="font-semibold text-white">${challenge.title}</h3>
+                                        <p class="text-xs text-gray-400 mt-1">By ${creator?.name || 'Unknown'}</p>
+                                    </div>
+                                    ${buttonHTML}
+                                </div>`
+                            }).join('') : '<p class="text-gray-400">No challenges have been posted yet.</p>'}
+                        </div>
+                    `;
+                });
+            }
+
+            async function renderChallengeDetailPage(challengeId) {
+                const page = pageElements.challengeDetail;
+                const challengeRef = doc(db, "challenges", challengeId);
+                const challengeSnap = await getDoc(challengeRef);
+
+                if (!challengeSnap.exists()) {
+                    page.innerHTML = `<h1 class="text-2xl font-bold text-red-500">Challenge not found</h1>`;
+                    return;
+                }
+                const challenge = {id: challengeSnap.id, ...challengeSnap.data()};
+                
+                page.innerHTML = `
+                    <h1 class="text-3xl font-bold text-white mb-2">${challenge.title}</h1>
+                    <p class="text-gray-400 mb-6">Each correct answer is worth 3 points.</p>
+                    <form id="take-challenge-form" data-id="${challenge.id}">
+                        <div class="space-y-8">
+                        ${challenge.questions.map((q, index) => `
+                            <div class="bg-gray-900/50 p-6 rounded-lg">
+                                <p class="font-semibold text-white mb-4">${index + 1}. ${q.questionText}</p>
+                                <div class="space-y-3">
+                                    ${q.options.map((opt, optIndex) => `
+                                        <div>
+                                            <input type="radio" id="q${index}_opt${optIndex}" name="question_${index}" value="${optIndex}" class="hidden peer">
+                                            <label for="q${index}_opt${optIndex}" class="block p-3 rounded-md border-2 border-gray-700 cursor-pointer peer-checked:border-blue-500 peer-checked:bg-blue-900/50 hover:bg-gray-700/50">
+                                                ${String.fromCharCode(97 + optIndex)}) ${opt}
+                                            </label>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `).join('')}
+                        </div>
+                        <div class="mt-8 text-right">
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-md">Submit</button>
+                        </div>
+                    </form>
+                `;
+            }
+
+            async function renderSearchResultsPage(searchQuery) {
+                const page = pageElements.searchResults;
+                page.innerHTML = `<h1 class="text-3xl font-bold text-white mb-6">Search Results for: "${searchQuery}"</h1><div id="search-results-container" class="space-y-4"></div>`;
+                const container = document.getElementById('search-results-container');
+                
+                const questionsSnapshot = await getDocs(collection(db, "questions"));
+                const questions = questionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                const lowercasedQuery = searchQuery.toLowerCase();
+                const results = questions.filter(q => 
+                    q.title.toLowerCase().includes(lowercasedQuery) || 
+                    q.body.toLowerCase().includes(lowercasedQuery)
+                );
+
+                if (results.length > 0) {
+                    container.innerHTML = results.map(question => {
+                        const author = users[question.authorId];
+                        return `
+                        <a href="#" class="block bg-gray-900/50 p-4 rounded-md hover:bg-gray-700/50 nav-link" data-page="questionDetail" data-id="${question.id}">
+                            <div class="flex items-center">
+                                <img src="${author?.avatar || 'https://placehold.co/40x40'}" alt="${author?.name || 'Unknown'}" class="w-10 h-10 rounded-full mr-4">
+                                <div class="flex-1">
+                                    <h3 class="font-semibold text-white">${question.title}</h3>
+                                    <p class="text-xs text-gray-400 mt-1">Asked by ${author?.name || 'Unknown'}</p>
+                                </div>
+                                <div class="text-center w-20">
+                                    <div class="font-bold text-white">${question.answers?.length || 0}</div>
+                                    <div class="text-xs text-gray-400">replies</div>
+                                </div>
+                            </div>
+                        </a>
+                        `;
+                    }).join('');
+                } else {
+                    container.innerHTML = '<p class="text-gray-400">No results found for your query.</p>';
+                }
+            }
+
+            function renderSettingsPage() {
+                const page = pageElements.settings;
+                page.innerHTML = `
+                    <h1 class="text-3xl font-bold text-white mb-6">About </h1>
+                    <div class="space-y-6">
+                        <div class="bg-gray-900/50 rounded-lg p-6">
+                            <h2 class="text-2xl font-bold text-white mb-4">About QuantumQuorum</h2>
+                            <p class="text-gray-300 mb-4">Welcome to QuantumQuorum! This project was developed by NANDA KISHORE SREEJITH SBNG, a Computer Science engineering student at Sri Venkateswara College of Engineering (2024-2028).</p>
+                            <p class="text-gray-300 mb-4">The primary goal of this website is to create a dynamic and engaging platform for students to learn about and collaborate on quantum computing. My motive for building this forum is to foster a strong community where we can share knowledge, ask questions, and work together on projects that will help us all grow in this exciting field.</p>
+                            <p class="text-gray-300 mb-4">This website is a space for us to explore and understand the complexities of quantum mechanics and its applications. It's designed to make a challenging subject more accessible and interactive for everyone.</p>
+                            <p class="text-gray-300 mb-4">I want to extend a special thank you to my HOD, Anitha Mam, for giving me this opportunity and her guidance. I also want to thank my parents for their support and for providing the resources needed to build this website, as well as my friends for their helpful support.</p>
+                            <p class="text-gray-300 mb-4">Thank you for visiting, and I hope you find this a valuable resource for your quantum computing journey.</p>
+                            <div class="mt-6 border-t border-gray-700 pt-4">
+                                <h3 class="font-bold text-white mb-2">Website Credits</h3>
+                                <p class="text-gray-300"><strong>Developed by:</strong> NANDA KISHORE SREEJITH</p>
+                                <p class="text-gray-300"><strong>Mentor:</strong> HOD Anitha Mam</p>
+                            </div>
+                        </div>
+                        <div class="bg-gray-900/50 rounded-lg p-6">
+                            <h2 class="text-2xl font-bold text-white mb-4">Community Guidelines</h2>
+                            <p class="text-gray-300 mb-4">To ensure a productive and respectful environment, please follow these guidelines:</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <h3 class="font-bold text-white mb-2">Do:</h3>
+                                    <ul class="list-disc list-inside space-y-2 text-gray-300">
+                                        <li>Post questions and answers related to quantum computing.</li>
+                                        <li>Engage in collaborative discussions.</li>
+                                        <li>Share useful resources and articles.</li>
+                                        <li>Maintain a polite and encouraging tone in all interactions.</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-white mb-2">Do Not:</h3>
+                                    <ul class="list-disc list-inside space-y-2 text-gray-300">
+                                        <li>Post off-topic or irrelevant content.</li>
+                                        <li>Engage in personal attacks or disrespectful behavior.</li>
+                                        <li>Share spam or promotional material.</li>
+                                        <li>Add personal information in public posts.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="mt-6">
+                                <h3 class="font-bold text-white mb-2">Maintain Decorum:</h3>
+                                <ul class="list-disc list-inside space-y-2 text-gray-300">
+                                    <li>Always treat others with respect.</li>
+                                    <li>Use clear and constructive language.</li>
+                                    <li>Add content to the correct sections of the forum to maintain organization and make it easy for others to find.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+
+            function renderModals() {
+                document.getElementById('signUpModal').innerHTML = `<form id="signup-form" class="bg-gray-800 border border-gray-700 rounded-lg p-8 w-full max-w-md"><h2 class="text-2xl font-bold text-white mb-4">Create Account</h2><div class="mb-4"><label class="block text-gray-400 mb-1">Email</label><input type="email" name="email" class="w-full bg-gray-700 rounded p-2 focus:outline-none ring-blue-500 focus:ring-2" required></div><div class="mb-4"><label class="block text-gray-400 mb-1">Password</label><input type="password" name="password" class="w-full bg-gray-700 rounded p-2 focus:outline-none ring-blue-500 focus:ring-2" required></div><p class="text-red-400 text-sm mb-4 h-5" id="signup-error"></p><div class="flex justify-end space-x-4"><button type="button" class="modal-cancel-btn bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-md">Cancel</button><button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md">Sign Up</button></div></form>`;
+                document.getElementById('logInModal').innerHTML = `<form id="login-form" class="bg-gray-800 border border-gray-700 rounded-lg p-8 w-full max-w-md"><h2 class="text-2xl font-bold text-white mb-4">Log In</h2><div class="mb-4"><label class="block text-gray-400 mb-1">Email</label><input type="email" name="email" class="w-full bg-gray-700 rounded p-2 focus:outline-none ring-blue-500 focus:ring-2" required></div><div class="mb-4"><label class="block text-gray-400 mb-1">Password</label><input type="password" name="password" class="w-full bg-gray-700 rounded p-2 focus:outline-none ring-blue-500 focus:ring-2" required></div><p class="text-red-400 text-sm mb-4 h-5" id="login-error"></p><div class="flex justify-end space-x-4"><button type="button" class="modal-cancel-btn bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-md">Cancel</button><button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md">Log In</button></div></form>`;
+                document.getElementById('editProfileModal').innerHTML = `<form id="edit-profile-form" class="bg-gray-800 border border-gray-700 rounded-lg p-8 w-full max-w-2xl space-y-4"></form>`;
+                document.getElementById('askQuestionModal').innerHTML = `<form id="ask-question-form" class="bg-gray-800 border border-gray-700 rounded-lg p-8 w-full max-w-2xl"><h2 class="text-2xl font-bold text-white mb-4">Ask a Question</h2><div class="mb-4"><label class="block text-gray-400 mb-1">Title</label><input type="text" class="w-full bg-gray-700 rounded p-2 focus:outline-none ring-blue-500 focus:ring-2" required></div><div class="mb-4"><label class="block text-gray-400 mb-1">Category</label><select id="ask-question-category" class="w-full bg-gray-700 rounded p-2 focus:outline-none ring-blue-500 focus:ring-2"></select></div><div class="mb-4"><label class="block text-gray-400 mb-1">Body</label><textarea rows="6" class="w-full bg-gray-700 rounded p-2 focus:outline-none ring-blue-500 focus:ring-2" required></textarea></div><div class="flex justify-end space-x-4"><button type="button" class="modal-cancel-btn bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-md">Cancel</button><button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md">Post</button></div></form>`;
+                document.getElementById('editQuestionModal').innerHTML = `<form id="edit-question-form" class="bg-gray-800 border border-gray-700 rounded-lg p-8 w-full max-w-2xl"><h2 class="text-2xl font-bold text-white mb-4">Edit Question</h2><input type="hidden" name="questionId"><div class="mb-4"><label class="block text-gray-400 mb-1">Title</label><input type="text" name="title" class="w-full bg-gray-700 rounded p-2 focus:outline-none ring-blue-500 focus:ring-2" required></div><div class="mb-4"><label class="block text-gray-400 mb-1">Body</label><textarea rows="6" name="body" class="w-full bg-gray-700 rounded p-2 focus:outline-none ring-blue-500 focus:ring-2" required></textarea></div><div class="flex justify-end space-x-4"><button type="button" class="modal-cancel-btn bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-md">Cancel</button><button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md">Save Changes</button></div></form>`;
+                document.getElementById('editProfileModal').innerHTML = `<form id="edit-profile-form" class="bg-gray-800 border border-gray-700 rounded-lg p-8 w-full max-w-2xl space-y-4"></form>`;
+                document.getElementById('messageMemberModal').innerHTML = `<form id="message-member-form" class="bg-gray-800 border border-gray-700 rounded-lg p-8 w-full max-w-2xl"><h2 id="message-member-title" class="text-2xl font-bold text-white mb-4">Message Member</h2><input type="hidden" name="recipientId"><div class="mb-4"><label class="block text-gray-400 mb-1">Subject</label><input type="text" name="subject" class="w-full bg-gray-700 rounded p-2 focus:outline-none ring-blue-500 focus:ring-2" required></div><div class="mb-4"><label class="block text-gray-400 mb-1">Message</label><textarea name="body" rows="6" class="w-full bg-gray-700 rounded p-2 focus:outline-none ring-blue-500 focus:ring-2" required></textarea></div><div class="flex justify-end space-x-4"><button type="button" class="modal-cancel-btn bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-md">Cancel</button><button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md">Send Message</button></div></form>`;
+                document.getElementById('uploadPaperModal').innerHTML = `<form id="upload-paper-form" class="bg-gray-800 border border-gray-700 rounded-lg p-8 w-full max-w-3xl"><h2 class="text-2xl font-bold text-white mb-4">Upload Research Paper</h2><div class="mb-4"><label class="block text-gray-400 mb-1">Title</label><input type="text" name="title" class="w-full bg-gray-700 rounded p-2" required></div><div class="mb-4"><label class="block text-gray-400 mb-1">Publish Date</label><input type="date" name="publishDate" class="w-full bg-gray-700 rounded p-2" required></div><div class="mb-4"><label class="block text-gray-400 mb-1">Mentor (if any)</label><input type="text" name="mentor" class="w-full bg-gray-700 rounded p-2"></div><div class="mb-4"><label class="block text-gray-400 mb-1">Content (paste here)</label><textarea name="content" rows="10" class="w-full bg-gray-700 rounded p-2" required></textarea></div><div class="flex justify-end space-x-4"><button type="button" class="modal-cancel-btn bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-md">Cancel</button><button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md">Submit Paper</button></div></form>`;
+                document.getElementById('editPaperModal').innerHTML = `<form id="edit-paper-form" class="bg-gray-800 border border-gray-700 rounded-lg p-8 w-full max-w-3xl"><h2 class="text-2xl font-bold text-white mb-4">Edit Research Paper</h2><input type="hidden" name="paperId"><div class="mb-4"><label class="block text-gray-400 mb-1">Title</label><input type="text" name="title" class="w-full bg-gray-700 rounded p-2" required></div><div class="mb-4"><label class="block text-gray-400 mb-1">Publish Date</label><input type="date" name="publishDate" class="w-full bg-gray-700 rounded p-2" required></div><div class="mb-4"><label class="block text-gray-400 mb-1">Mentor (if any)</label><input type="text" name="mentor" class="w-full bg-gray-700 rounded p-2"></div><div class="mb-4"><label class="block text-gray-400 mb-1">Content (paste here)</label><textarea name="content" rows="10" class="w-full bg-gray-700 rounded p-2" required></textarea></div><div class="flex justify-end space-x-4"><button type="button" class="modal-cancel-btn bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-md">Cancel</button><button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md">Save Changes</button></div></form>`;
+                document.getElementById('uploadDocModal').innerHTML = `<form id="upload-doc-form" class="bg-gray-800 border border-gray-700 rounded-lg p-8 w-full max-w-3xl"><h2 class="text-2xl font-bold text-white mb-4">Upload Learning Content</h2><div class="mb-4"><label class="block text-gray-400 mb-1">Title</label><input type="text" name="title" class="w-full bg-gray-700 rounded p-2" required></div><div class="mb-4"><label class="block text-gray-400 mb-1">Content</label><textarea name="content" rows="10" class="w-full bg-gray-700 rounded p-2" required></textarea></div><div class="flex justify-end space-x-4"><button type="button" class="modal-cancel-btn bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-md">Cancel</button><button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md">Upload</button></div></form>`;
+                document.getElementById('postNewsModal').innerHTML = `<form id="post-news-form" class="bg-gray-800 border border-gray-700 rounded-lg p-8 w-full max-w-3xl"><h2 class="text-2xl font-bold text-white mb-4">Post News</h2><div class="mb-4"><label class="block text-gray-400 mb-1">Title</label><input type="text" name="title" class="w-full bg-gray-700 rounded p-2" required></div><div class="mb-4"><label class="block text-gray-400 mb-1">Short Description</label><textarea name="shortDescription" rows="2" class="w-full bg-gray-700 rounded p-2" required></textarea></div><div class="mb-4"><label class="block text-gray-400 mb-1">Image URL</label><input type="url" name="imageUrl" class="w-full bg-gray-700 rounded p-2"></div><div class="mb-4"><label class="block text-gray-400 mb-1">Source URL (optional)</label><input type="url" name="sourceURL" class="w-full bg-gray-700 rounded p-2"></div><div class="mb-4"><label class="block text-gray-400 mb-1">Content</label><textarea name="content" rows="8" class="w-full bg-gray-700 rounded p-2" required></textarea></div><div class="flex justify-end space-x-4"><button type="button" class="modal-cancel-btn bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-md">Cancel</button><button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md">Post</button></div></form>`;
+                document.getElementById('createTeamModal').innerHTML = `<form id="create-team-form" class="bg-gray-800 border border-gray-700 rounded-lg p-8 w-full max-w-2xl"><h2 class="text-2xl font-bold text-white mb-4">Create a Team</h2><div class="mb-4"><label class="block text-gray-400 mb-1">Project Title</label><input type="text" name="projectTitle" class="w-full bg-gray-700 rounded p-2" required></div><div class="mb-4"><label class="block text-gray-400 mb-1">Description</label><textarea name="description" rows="5" class="w-full bg-gray-700 rounded p-2" required></textarea></div><div class="flex justify-end space-x-4"><button type="button" class="modal-cancel-btn bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-md">Cancel</button><button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md">Create Team</button></div></form>`;
+                document.getElementById('addProjectModal').innerHTML = `<form id="add-project-form" class="bg-gray-800 border border-gray-700 rounded-lg p-8 w-full max-w-2xl"><h2 class="text-2xl font-bold text-white mb-4">Add Your Project</h2><div class="mb-4"><label class="block text-gray-400 mb-1">Project Title</label><input type="text" name="projectTitle" class="w-full bg-gray-700 rounded p-2" required></div><div class="mb-4"><label class="block text-gray-400 mb-1">Short Description</label><input type="text" name="shortDescription" class="w-full bg-gray-700 rounded p-2" required></div><div class="mb-4"><label class="block text-gray-400 mb-1">Team Members (comma-separated)</label><input type="text" name="teamMembers" class="w-full bg-gray-700 rounded p-2"></div><div class="mb-4"><label class="block text-gray-400 mb-1">Tags (comma-separated)</label><input type="text" name="tags" class="w-full bg-gray-700 rounded p-2"></div><div class="mb-4"><label class="block text-gray-400 mb-1">Full Details</label><textarea name="fullDetails" rows="6" class="w-full bg-gray-700 rounded p-2" required></textarea></div><div class="flex justify-end space-x-4"><button type="button" class="modal-cancel-btn bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-md">Cancel</button><button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md">Add Project</button></div></form>`;
+                document.getElementById('postAnnouncementModal').innerHTML = `<form id="post-announcement-form" class="bg-gray-800 border border-gray-700 rounded-lg p-8 w-full max-w-2xl"><h2 class="text-2xl font-bold text-white mb-4">Post Announcement</h2><input type="hidden" name="announcementId"><div class="mb-4"><label class="block text-gray-400 mb-1">Title</label><input type="text" name="title" class="w-full bg-gray-700 rounded p-2" required></div><div class="mb-4"><label class="block text-gray-400 mb-1">Content</label><textarea name="content" rows="6" class="w-full bg-gray-700 rounded p-2" required></textarea></div><div class="flex justify-end space-x-4"><button type="button" class="modal-cancel-btn bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-md">Cancel</button><button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md">Post</button></div></form>`;
+                document.getElementById('createChallengeModal').innerHTML = `<div class="bg-gray-800 border border-gray-700 rounded-lg p-8 w-full max-w-3xl max-h-[80vh] flex flex-col"><form id="create-challenge-form" class="flex flex-col flex-1"><h2 class="text-2xl font-bold text-white mb-6">Create New Challenge</h2><div class="mb-4"><label class="block text-gray-400 mb-1">Challenge Title</label><input type="text" name="title" class="w-full bg-gray-700 rounded p-2" required></div><div class="mb-4"><label class="block text-gray-400 mb-1">Number of Questions</label><select name="numQuestions" class="w-full bg-gray-700 rounded p-2"><option value="5">5</option><option value="10">10</option></select></div><div id="challenge-questions-container" class="space-y-6 overflow-y-auto flex-1 pr-2"></div><div class="flex justify-end space-x-4 mt-6 border-t border-gray-700 pt-4"><button type="button" class="modal-cancel-btn bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-md">Cancel</button><button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md">Post MCQ</button></div></form></div>`;
+                document.getElementById('challengeResultModal').innerHTML = `<div class="bg-gray-800 border border-gray-700 rounded-lg p-8 w-full max-w-2xl"><h2 id="challenge-result-title" class="text-2xl font-bold text-white mb-4">Quiz Results</h2><p id="challenge-result-score" class="text-lg text-white mb-6"></p><div id="challenge-result-details" class="space-y-4 max-h-96 overflow-y-auto"></div><div class="flex justify-end mt-6"><button type="button" class="modal-cancel-btn bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md">Close</button></div></div>`;
+                document.getElementById('messageModal').innerHTML = `<div class="bg-gray-800 border border-gray-700 rounded-lg p-8 w-full max-w-md"><h3 id="message-modal-title" class="text-2xl font-bold text-white mb-4">Message</h3><p id="message-modal-content" class="text-gray-300 mb-6"></p><div class="flex justify-end"><button type="button" class="modal-cancel-btn bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md">OK</button></div></div>`;
+                document.getElementById('confirmModal').innerHTML = `<div class="bg-gray-800 border border-gray-700 rounded-lg p-8 w-full max-w-md"><h3 id="confirm-modal-title" class="text-2xl font-bold text-white mb-4">Are you sure?</h3><p id="confirm-modal-content" class="text-gray-300 mb-6"></p><div class="flex justify-end space-x-4"><button type="button" id="confirm-cancel-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-md">Cancel</button><button type="button" id="confirm-ok-btn" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md">Confirm</button></div></div>`;
+                document.getElementById('firstLoginModal').innerHTML = `<form id="first-login-form" class="bg-gray-800 border border-gray-700 rounded-lg p-8 w-full max-w-md"><h2 class="text-2xl font-bold text-white mb-4">Welcome!</h2><p class="text-gray-300 mb-4">Please enter a display name to get started.</p><div class="mb-4"><label class="block text-gray-400 mb-1">Display Name</label><input type="text" name="displayName" class="w-full bg-gray-700 rounded p-2 focus:outline-none ring-blue-500 focus:ring-2" required></div><div class="flex justify-end"><button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md">Save</button></div></form>`;
+            }
+
+            function showMessage(title, content) {
+                document.getElementById('message-modal-title').textContent = title;
+                document.getElementById('message-modal-content').textContent = content;
+                document.getElementById('messageModal').classList.replace('hidden', 'flex');
+            }
+
+            function showConfirm(title, content, onConfirm) {
+                const modal = document.getElementById('confirmModal');
+                modal.querySelector('#confirm-modal-title').textContent = title;
+                modal.querySelector('#confirm-modal-content').textContent = content;
+                modal.classList.replace('hidden', 'flex');
+
+                const confirmOkBtn = document.getElementById('confirm-ok-btn');
+                const confirmCancelBtn = document.getElementById('confirm-cancel-btn');
+
+                const handleConfirm = () => {
+                    onConfirm();
+                    modal.classList.replace('flex', 'hidden');
+                    cleanup();
+                }
+                
+                const handleCancel = () => {
+                    modal.classList.replace('flex', 'hidden');
+                    cleanup();
+                }
+
+                const cleanup = () => {
+                    confirmOkBtn.removeEventListener('click', handleConfirm);
+                    confirmCancelBtn.removeEventListener('click', handleCancel);
+                }
+
+                confirmOkBtn.addEventListener('click', handleConfirm);
+                confirmCancelBtn.addEventListener('click', handleCancel);
+            }
+
+            function renderHelperBot() {
+                const botLinks = document.getElementById('helper-bot-links');
+                const links = [ { page: 'facultyCorner', name: 'Faculty' }, { page: 'researchPapers', name: 'Papers' }, { page: 'docs', name: 'Docs' }, { page: 'news', name: 'News' }, { page: 'team', name: 'Teams' }, { page: 'challenges', name: 'Challenges' }];
+                botLinks.innerHTML = links.map(link => `<a href="#" class="nav-link bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-2 rounded-md" data-page="${link.page}">${link.name}</a>`).join('');
+            }
+
+            async function navigateTo(pageKey, dataId = null) {
+                const lastPage = pageHistory[pageHistory.length - 1];
+                if (lastPage.page !== pageKey || lastPage.id !== dataId) {
+                    pageHistory.push({page: pageKey, id: dataId});
+                }
+                
+                // Unsubscribe from the previous page's real-time listener
+                if (currentPageUnsubscribe) {
+                    currentPageUnsubscribe();
+                    currentPageUnsubscribe = null;
+                }
+
+                Object.values(pageElements).forEach(p => p.classList.remove('active'));
+                const targetPage = pageElements[pageKey] || pageElements.home;
+                targetPage.classList.add('active');
+                
+                document.querySelectorAll('.sidebar-link').forEach(link => { 
+                    link.classList.remove('active'); 
+                    if (link.dataset.page === pageKey && link.dataset.id === dataId) {
+                        link.classList.add('active');
+                    } else if (link.dataset.page === pageKey && !link.dataset.id) {
+                         link.classList.add('active');
+                    }
+                });
+                
+                const backButton = document.querySelector('.go-back-btn');
+                backButton.style.display = (pageKey === 'home') ? 'none' : 'flex';
+                
+                await fetchAllData();
+
+                switch (pageKey) {
+                    case 'home': await renderHomePage(); break;
+                    case 'questionList': renderQuestionListPage(dataId); break;
+                    case 'questionDetail': 
+                        if(currentUser) await updateDoc(doc(db, "users", currentUser.uid), { topicsViewed: increment(1) });
+                        renderQuestionDetailPage(dataId); 
+                        break;
+                    case 'members': renderMembersPage(); break;
+                    case 'userProfile': await renderUserProfilePage(dataId); break;
+                    case 'facultyCorner': renderFacultyCornerPage(); break;
+                    case 'researchPapers': renderResearchPapersPage(); break;
+                    case 'researchPaperDetail': renderResearchPaperDetailPage(dataId); break;
+                    case 'docs': renderDocsPage(); break;
+                    case 'docDetail': await renderDocDetailPage(dataId); break;
+                    case 'news': renderNewsPage(); break;
+                    case 'newsDetail': await renderNewsDetailPage(dataId); break;
+                    case 'team': renderTeamFinderPage(); break;
+                    case 'leaderboard': renderLeaderboardPage(); break;
+                    case 'projects': renderProjectsPage(); break;
+                    case 'projectDetail': await renderProjectDetailPage(dataId); break;
+                    case 'announcements': renderAnnouncementsPage(); break;
+                    case 'messages': renderMessagesPage(); break;
+                    case 'messageDetail': renderMessageDetailPage(dataId); break;
+                    case 'searchResults': await renderSearchResultsPage(dataId); break;
+                    case 'challenges': renderChallengesPage(); break;
+                    case 'challengeDetail': 
+                        if (currentUser && (currentUser.completedChallenges || []).includes(dataId)) {
+                             showMessage("Already Completed", "You have already completed this challenge.");
+                             navigateTo('challenges');
+                        } else {
+                            renderChallengeDetailPage(dataId); 
+                        }
+                        break;
+                    case 'settings': renderSettingsPage(); break;
+                    default: await renderHomePage(); break;
+                }
+            }
+            
+            // --- EVENT LISTENERS ---
+
+            // Sidebar Toggle Logic
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+            function toggleSidebar() {
+                sidebar.classList.toggle('open');
+                sidebarOverlay.classList.toggle('hidden');
+            }
+
+            sidebarToggleBtn.addEventListener('click', toggleSidebar);
+            sidebarOverlay.addEventListener('click', toggleSidebar);
+
+            document.getElementById('search-form').addEventListener('submit', e => {
+                e.preventDefault();
+                const query = document.getElementById('search-input').value.trim();
+                if (query) {
+                    navigateTo('searchResults', query);
+                }
+            });
+
+            document.querySelector('.go-back-btn').addEventListener('click', () => {
+                if (pageHistory.length > 1) {
+                    pageHistory.pop();
+                    const lastPage = pageHistory[pageHistory.length - 1];
+                    navigateTo(lastPage.page, lastPage.id);
+                }
+            });
+
+            document.body.addEventListener('click', async e => {
+                // Close notification dropdown if clicking outside
+                const dropdown = document.getElementById('notifications-dropdown');
+                const bellContainer = e.target.closest('.notification-bell-container');
+                if (dropdown && !dropdown.classList.contains('hidden') && !bellContainer) {
+                    dropdown.classList.add('hidden');
+                }
+
+                const navLink = e.target.closest('.nav-link');
+                if (navLink) { 
+                    e.preventDefault(); 
+                    navigateTo(navLink.dataset.page, navLink.dataset.id); 
+                    
+                    // If on mobile, close the sidebar after navigation
+                    if (window.innerWidth < 1024 && sidebar.classList.contains('open')) {
+                        toggleSidebar();
+                    }
+
+                    // Close dropdown after navigation
+                    const dropdown = document.getElementById('notifications-dropdown');
+                    if (dropdown) dropdown.classList.add('hidden');
+                }
+
+                const modalCancelBtn = e.target.closest('.modal-cancel-btn');
+                if (modalCancelBtn) { modalCancelBtn.closest('.fixed').classList.replace('flex', 'hidden'); }
+                
+                if (e.target.id === 'signup-btn') { document.getElementById('signUpModal').classList.replace('hidden', 'flex'); }
+                if (e.target.id === 'login-btn' || e.target.id === 'login-from-reply-btn') { document.getElementById('logInModal').classList.replace('hidden', 'flex'); }
+                if (e.target.id === 'logout-btn') { await signOut(auth); }
+
+                 if (e.target.closest('#helper-bot-trigger')) {
+                    document.getElementById('helper-bot-container').classList.toggle('open');
+                }
+
+                if (e.target.closest('#notification-bell-btn')) {
+                    const dropdown = document.getElementById('notifications-dropdown');
+                    dropdown.classList.toggle('hidden');
+                    if (!dropdown.classList.contains('hidden')) {
+                        markNotificationsAsRead();
+                    }
+                }
+
+                if (e.target.id === 'edit-profile-btn') {
+                    const form = document.getElementById('edit-profile-form');
+                    form.innerHTML = `
+                        <h2 class="text-2xl font-bold text-white">Edit Profile</h2>
+                        <div><label class="block text-gray-400 mb-1">Name</label><input type="text" name="name" class="w-full bg-gray-700 rounded p-2" value="${currentUser.name || ''}"></div>
+                        <div><label class="block text-gray-400 mb-1">Email</label><input type="email" name="email" class="w-full bg-gray-700 rounded p-2" value="${currentUser.email || ''}"></div>
+                        <div><label class="block text-gray-400 mb-1">Phone</label><input type="tel" name="phone" class="w-full bg-gray-700 rounded p-2" value="${currentUser.phone || ''}"></div>
+                        <div><label class="block text-gray-400 mb-1">College</label><input type="text" name="collegeName" class="w-full bg-gray-700 rounded p-2" value="${currentUser.collegeName || ''}"></div>
+                        <div><label class="block text-gray-400 mb-1">Department</label><input type="text" name="department" class="w-full bg-gray-700 rounded p-2" value="${currentUser.department || ''}"></div>
+                        <div><label class="block text-gray-400 mb-1">Year</label><input type="text" name="year" class="w-full bg-gray-700 rounded p-2" value="${currentUser.year || ''}"></div>
+                        <div><label class="block text-gray-400 mb-1">Mentor</label><input type="text" name="mentorName" class="w-full bg-gray-700 rounded p-2" value="${currentUser.mentorName || ''}"></div>
+                        <div><label class="block text-gray-400 mb-1">Collaboration</label><select name="wantsToCollaborate" class="w-full bg-gray-700 rounded p-2"><option value="true" ${currentUser.wantsToCollaborate ? 'selected' : ''}>Looking for collaboration</option><option value="false" ${!currentUser.wantsToCollaborate ? 'selected' : ''}>Not looking</option></select></div>
+                        <div><label class="block text-gray-400 mb-1">Role</label><select name="isMentor" class="w-full bg-gray-700 rounded p-2"><option value="true" ${currentUser.isMentor ? 'selected' : ''}>I am a mentor/faculty</option><option value="false" ${!currentUser.isMentor ? 'selected' : ''}>I am a student</option></select></div>
+                        <div class="flex justify-end space-x-4"><button type="button" class="modal-cancel-btn bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-md">Cancel</button><button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md">Save Changes</button></div>
+                    `;
+                    document.getElementById('editProfileModal').classList.replace('hidden', 'flex');
+                }
+
+                const messageMemberBtn = e.target.closest('.message-member-btn');
+                if (messageMemberBtn) {
+                    if (!currentUser) {
+                        showMessage('Login Required', 'Please log in to message a member.');
+                        return;
+                    }
+                    const recipientId = messageMemberBtn.dataset.id;
+                    const recipientName = messageMemberBtn.dataset.name;
+                    const modal = document.getElementById('messageMemberModal');
+                    modal.querySelector('#message-member-title').textContent = `Message ${recipientName}`;
+                    modal.querySelector('input[name="recipientId"]').value = recipientId;
+                    modal.classList.replace('hidden', 'flex');
+                }
+
+                if (e.target.id === 'upload-paper-btn') {
+                    if (!currentUser) { showMessage('Login Required', 'Please log in to upload a paper.'); return; }
+                    document.getElementById('uploadPaperModal').classList.replace('hidden', 'flex');
+                }
+                
+                if (e.target.id === 'upload-doc-btn') {
+                    if (!currentUser) { showMessage('Login Required', 'Please log in to upload content.'); return; }
+                    document.getElementById('uploadDocModal').classList.replace('hidden', 'flex');
+                }
+
+                if (e.target.id === 'post-news-btn') {
+                    if (!currentUser) { showMessage('Login Required', 'Please log in to post news.'); return; }
+                    document.getElementById('postNewsModal').classList.replace('hidden', 'flex');
+                }
+                
+                if (e.target.id === 'create-team-btn') {
+                    if (!currentUser) { showMessage('Login Required', 'Please log in to create a team.'); return; }
+                    document.getElementById('createTeamModal').classList.replace('hidden', 'flex');
+                }
+
+                if (e.target.id === 'add-project-btn') {
+                    if (!currentUser) { showMessage('Login Required', 'Please log in to add a project.'); return; }
+                    document.getElementById('addProjectModal').classList.replace('hidden', 'flex');
+                }
+
+                if (e.target.id === 'post-announcement-btn') {
+                    const form = document.getElementById('post-announcement-form');
+                    form.reset();
+                    form.announcementId.value = '';
+                    document.getElementById('postAnnouncementModal').classList.replace('hidden', 'flex');
+                }
+
+                const editAnnouncementBtn = e.target.closest('.edit-announcement-btn');
+                if (editAnnouncementBtn) {
+                    const announcementId = editAnnouncementBtn.dataset.id;
+                    const announcementDoc = await getDoc(doc(db, "announcements", announcementId));
+                    if (announcementDoc.exists()) {
+                        const announcement = announcementDoc.data();
+                        const form = document.getElementById('post-announcement-form');
+                        form.announcementId.value = announcementId;
+                        form.title.value = announcement.title;
+                        form.content.value = announcement.content;
+                        document.getElementById('postAnnouncementModal').classList.replace('hidden', 'flex');
+                    }
+                }
+
+                const deleteAnnouncementBtn = e.target.closest('.delete-announcement-btn');
+                if (deleteAnnouncementBtn) {
+                    const announcementId = deleteAnnouncementBtn.dataset.id;
+                    showConfirm("Delete Announcement?", "Are you sure you want to delete this announcement?", async () => {
+                        await deleteDoc(doc(db, "announcements", announcementId));
+                        showMessage("Success", "Announcement has been deleted.");
+                        navigateTo('announcements');
+                    });
+                }
+                
+                const deleteMessageBtn = e.target.closest('.delete-message-btn');
+                if (deleteMessageBtn) {
+                    const convoId = deleteMessageBtn.dataset.conversationId;
+                    const msgIndex = parseInt(deleteMessageBtn.dataset.messageIndex);
+
+                    showConfirm("Delete Message?", "Are you sure you want to delete this message?", async () => {
+                        const convoRef = doc(db, "conversations", convoId);
+                        const convoSnap = await getDoc(convoRef);
+                        if (convoSnap.exists()) {
+                            const convoData = convoSnap.data();
+                            const updatedMessages = convoData.messages.filter((_, index) => index !== msgIndex);
+                            await updateDoc(convoRef, { messages: updatedMessages });
+                            showMessage("Success", "Message has been deleted.");
+                        } else {
+                            showMessage("Error", "Conversation not found.");
+                        }
+                    });
+                }
+
+                const deleteTeamBtn = e.target.closest('.delete-team-btn');
+                if (deleteTeamBtn) {
+                    const teamId = deleteTeamBtn.dataset.id;
+                    showConfirm("Delete Team?", "Are you sure you want to delete this team? This cannot be undone.", async () => {
+                        await deleteDoc(doc(db, "teams", teamId));
+                        showMessage("Success", "Team has been deleted.");
+                        navigateTo('team');
+                    });
+                }
+
+                const expressInterestBtn = e.target.closest('.express-interest-btn');
+                if (expressInterestBtn) {
+                    if (!currentUser) {
+                        showMessage('Login Required', 'Please log in to express interest.');
+                        return;
+                    }
+                    const teamId = expressInterestBtn.dataset.id;
+                    // Show the contact details modal and pass the team ID
+                    document.getElementById('contactDetailsModal').classList.replace('hidden', 'flex');
+                    document.querySelector('#contact-details-form input[name="teamId"]').value = teamId;
+                    document.querySelector('#contact-details-form input[name="email"]').value = currentUser.email || '';
+                }
+                
+                const editPaperBtn = e.target.closest('.edit-paper-btn');
+                if (editPaperBtn) {
+                    const paperId = editPaperBtn.dataset.id;
+                    const paperDoc = await getDoc(doc(db, "papers", paperId));
+                    if (paperDoc.exists()) {
+                        const paper = paperDoc.data();
+                        const form = document.getElementById('edit-paper-form');
+                        form.paperId.value = paperId;
+                        form.title.value = paper.title;
+                        form.publishDate.value = paper.publishDate;
+                        form.mentor.value = paper.mentor || '';
+                        form.content.value = paper.content;
+                        document.getElementById('editPaperModal').classList.replace('hidden', 'flex');
+                    }
+                }
+
+                const deletePaperBtn = e.target.closest('.delete-paper-btn');
+                if(deletePaperBtn) {
+                    const paperId = deletePaperBtn.dataset.id;
+                    showConfirm("Delete Paper?", "Are you sure you want to delete this paper? This cannot be undone.", async () => {
+                        await deleteDoc(doc(db, "papers", paperId));
+                        if (currentUser && currentUser.points >= 100) {
+                            await updateDoc(doc(db, "users", currentUser.uid), { points: increment(-100) });
+                        }
+                        showMessage("Success", "Paper has been deleted.");
+                        navigateTo('researchPapers');
+                    });
+                }
+
+                const deleteDocBtn = e.target.closest('.delete-doc-btn');
+                if(deleteDocBtn) {
+                    const docId = deleteDocBtn.dataset.id;
+                    showConfirm("Delete Document?", "Are you sure you want to delete this document?", async () => {
+                        await deleteDoc(doc(db, "docs", docId));
+                        if (currentUser && currentUser.points >= 40) {
+                            await updateDoc(doc(db, "users", currentUser.uid), { points: increment(-40) });
+                        }
+                        showMessage("Success", "Document has been deleted.");
+                        navigateTo('docs');
+                    });
+                }
+
+                const deleteNewsBtn = e.target.closest('.delete-news-btn');
+                if(deleteNewsBtn) {
+                    const newsId = deleteNewsBtn.dataset.id;
+                    showConfirm("Delete News?", "Are you sure you want to delete this news item?", async () => {
+                        await deleteDoc(doc(db, "news", newsId));
+                        if (currentUser && currentUser.points >= 10) {
+                            await updateDoc(doc(db, "users", currentUser.uid), { points: increment(-10) });
+                        }
+                        showMessage("Success", "News item has been deleted.");
+                        navigateTo('news');
+                    });
+                }
+
+                const editQuestionBtn = e.target.closest('.edit-question-btn');
+                if (editQuestionBtn) {
+                    if (!currentUser) { showMessage('Login Required', 'Please log in to edit this question.'); return; }
+                    const questionId = editQuestionBtn.dataset.id;
+                    const questionDoc = await getDoc(doc(db, "questions", questionId));
+                    if (questionDoc.exists()) {
+                        const q = questionDoc.data();
+                        const form = document.getElementById('edit-question-form');
+                        form.querySelector('input[name="questionId"]').value = questionId;
+                        form.querySelector('input[name="title"]').value = q.title;
+                        form.querySelector('textarea[name="body"]').value = q.body;
+                        document.getElementById('editQuestionModal').classList.replace('hidden', 'flex');
+                    }
+                }
+                
+                const deleteQuestionBtn = e.target.closest('.delete-question-btn');
+                if (deleteQuestionBtn) {
+                    const questionId = deleteQuestionBtn.dataset.id;
+                    showConfirm("Delete Question?", "Are you sure you want to delete this question and all its answers? This cannot be undone.", async () => {
+                        await deleteDoc(doc(db, "questions", questionId));
+                        if (currentUser && currentUser.topicsCreated > 0) {
+                             await updateDoc(doc(db, "users", currentUser.uid), { topicsCreated: increment(-1) });
+                        }
+                        showMessage("Success", "Question has been deleted.");
+                        navigateTo('home');
+                    });
+                }
+
+                if (e.target.closest('#ask-question-header-btn')) { 
+                    if (!currentUser) {
+                        showMessage('Authentication Required', 'Please log in or sign up to ask a question.');
+                        return;
+                    }
+                    const categorySelect = document.getElementById('ask-question-category');
+                    // Use the static categories for the dropdown
+                    categorySelect.innerHTML = staticCategories.map(cat => `<option value="${cat.id}">${cat.name}</option>`).join('');
+                    document.getElementById('askQuestionModal').classList.replace('hidden', 'flex'); 
+                }
+                
+                const postAnswerBtn = e.target.closest('.post-answer-btn');
+                if (postAnswerBtn) {
+                    if (!currentUser) return; 
+                    const questionId = postAnswerBtn.dataset.id;
+                    const answerText = document.getElementById('answer-textarea').value;
+                    if (answerText.trim() !== '') {
+                        const questionDocRef = doc(db, "questions", questionId);
+                        const questionDoc = await getDoc(questionDocRef);
+                        const questionData = questionDoc.data();
+
+                        const newAnswer = { 
+                            by: currentUser.uid, 
+                            body: answerText, 
+                            createdAt: new Date(),
+                            likes: [] 
+                        };
+                        await updateDoc(questionDocRef, { answers: arrayUnion(newAnswer) });
+                        
+                        await createNotification(
+                            questionData.authorId,
+                            currentUser.uid,
+                            'reply',
+                            `${currentUser.name} replied to your question: "${questionData.title.substring(0, 30)}..."`,
+                            { page: 'questionDetail', id: questionId }
+                        );
+                        
+                        const userDocRef = doc(db, "users", currentUser.uid);
+                        await updateDoc(userDocRef, { postsCreated: increment(1), points: increment(5) });
+
+                        document.getElementById('answer-textarea').value = '';
+                    }
+                }
+
+                const postPaperCommentBtn = e.target.closest('.post-paper-comment-btn');
+                if (postPaperCommentBtn) {
+                    if (!currentUser) return;
+                    const paperId = postPaperCommentBtn.dataset.id;
+                    const commentText = document.getElementById('paper-comment-textarea').value;
+                    if (commentText.trim() !== '') {
+                        const paperDocRef = doc(db, "papers", paperId);
+                        const newComment = {
+                            by: currentUser.uid,
+                            body: commentText,
+                            createdAt: new Date()
+                        };
+                        await updateDoc(paperDocRef, { comments: arrayUnion(newComment) });
+                        document.getElementById('paper-comment-textarea').value = '';
+                    }
+                }
+
+                const likeBtn = e.target.closest('.like-btn');
+                if (likeBtn) {
+                    if (!currentUser) {
+                        showMessage('Authentication Required', 'Please log in to like answers.');
+                        return;
+                    }
+                    const questionId = likeBtn.dataset.questionId;
+                    const answerIndex = parseInt(likeBtn.dataset.answerIndex);
+                    const questionDocRef = doc(db, "questions", questionId);
+
+                    const questionDoc = await getDoc(questionDocRef);
+                    if (!questionDoc.exists()) return;
+
+                    const questionData = questionDoc.data();
+                    // Create a deep copy of the answers array to modify it safely
+                    const newAnswers = JSON.parse(JSON.stringify(questionData.answers));
+                    const answer = newAnswers[answerIndex];
+
+                    if (!answer) return;
+
+                    const answerAuthorId = answer.by;
+                    const answerAuthorRef = doc(db, "users", answerAuthorId);
+                    const currentUserRef = doc(db, "users", currentUser.uid);
+
+                    const isLiked = answer.likes?.includes(currentUser.uid);
+
+                    if (isLiked) {
+                        // --- UNLIKE LOGIC ---
+                        // Remove user from the answer's likes array
+                        answer.likes = answer.likes.filter(uid => uid !== currentUser.uid);
+                        
+                        // Update the entire answers array in Firestore
+                        await updateDoc(questionDocRef, { answers: newAnswers });
+
+                        // Fetch latest user data to prevent race conditions and going below zero
+                        const currentUserSnap = await getDoc(currentUserRef);
+                        const answerAuthorSnap = await getDoc(answerAuthorRef);
+                        
+                        if (currentUserSnap.exists() && currentUserSnap.data().likesGiven > 0) {
+                            await updateDoc(currentUserRef, { likesGiven: increment(-1) });
+                        }
+                        
+                        if (answerAuthorSnap.exists()) {
+                            const authorData = answerAuthorSnap.data();
+                            const updates = {};
+                            if (authorData.likesReceived > 0) {
+                                updates.likesReceived = increment(-1);
+                            }
+                            if (authorData.points > 0) {
+                                updates.points = increment(-1);
+                            }
+                            if (Object.keys(updates).length > 0) {
+                                await updateDoc(answerAuthorRef, updates);
+                            }
+                        }
+                    } else {
+                        // --- LIKE LOGIC ---
+                        // Add user to the answer's likes array
+                        if (!answer.likes) {
+                            answer.likes = [];
+                        }
+                        answer.likes.push(currentUser.uid);
+
+                        // Update the entire answers array in Firestore
+                        await updateDoc(questionDocRef, { answers: newAnswers });
+
+                        // Increment stats for both users
+                        await updateDoc(currentUserRef, { likesGiven: increment(1) });
+                        await updateDoc(answerAuthorRef, { likesReceived: increment(1), points: increment(1) });
+                        
+                        // Create a notification for the like
+                        await createNotification(
+                            answerAuthorId,
+                            currentUser.uid,
+                            'like',
+                            `${currentUser.name} liked your answer in: "${questionData.title.substring(0, 30)}..."`,
+                            { page: 'questionDetail', id: questionId }
+                        );
+                    }
+                }
+
+
+                if (e.target.id === 'create-challenge-btn') {
+                    document.getElementById('createChallengeModal').classList.replace('hidden', 'flex');
+                    renderChallengeQuestionFields(5); // Render initial 5 questions
+                }
+
+                const takeChallengeBtn = e.target.closest('.take-challenge-btn');
+                if (takeChallengeBtn) {
+                    if (!currentUser) {
+                        showMessage("Login Required", "Please log in to take a quiz.");
+                        return;
+                    }
+                    const challengeId = takeChallengeBtn.dataset.id;
+                    if ((currentUser.completedChallenges || []).includes(challengeId)) {
+                        showMessage("Already Completed", "You have already completed this challenge.");
+                        return;
+                    }
+                    navigateTo('challengeDetail', challengeId);
+                }
+            });
+
+            // Delegated Form Submission Listener
+            document.body.addEventListener('submit', async e => {
+                e.preventDefault(); 
+
+                switch(e.target.id) {
+                    case 'contact-details-form': {
+                        if (!currentUser) {
+                            showMessage("Error", "You must be logged in to express interest.");
+                            return;
+                        }
+                        const form = e.target;
+                        const teamId = form.teamId.value;
+                        const email = form.email.value;
+                        const phone = form.phone.value;
+                        const errorEl = document.getElementById('contact-error');
+                        
+                        if (!email.trim() && !phone.trim()) {
+                            errorEl.textContent = 'Please provide either an email or a phone number.';
+                            return;
+                        }
+                        
+                        try {
+                            errorEl.textContent = '';
+                            const teamDocRef = doc(db, "teams", teamId);
+                            const teamDoc = await getDoc(teamDocRef);
+                            const teamData = teamDoc.data();
+                            
+                            const isAlreadyInterested = teamData.interestedMembers.some(member => member.uid === currentUser.uid);
+                            if (isAlreadyInterested) {
+                                showMessage("Already Expressed", "You have already expressed interest in this team.");
+                                form.closest('.fixed').classList.replace('flex', 'hidden');
+                                return;
+                            }
+
+                            const newInterestedMember = {
+                                uid: currentUser.uid,
+                                name: currentUser.name,
+                                contactInfo: {
+                                    email: email,
+                                    phone: phone
+                                }
+                            };
+                            
+                            await updateDoc(teamDocRef, {
+                                interestedMembers: arrayUnion(newInterestedMember)
+                            });
+
+                            await createNotification(
+                                teamData.creatorId,
+                                currentUser.uid,
+                                'team-interest',
+                                `${currentUser.name} has expressed interest in your team "${teamData.projectTitle}". You can now view their contact details.`,
+                                { page: 'team', id: null }
+                            );
+
+                            showMessage("Success", "Your interest has been expressed! The team creator has been notified.");
+                            navigateTo('team'); 
+                        } catch (error) {
+                            console.error("Error expressing interest:", error);
+                            showMessage("Error", "Failed to express interest. Please try again.");
+                        } finally {
+                            form.closest('.fixed').classList.replace('flex', 'hidden');
+                        }
+                        break;
+                    }
+                    case 'first-login-form': {
+                        const form = e.target;
+                        const displayName = form.displayName.value;
+                        if (!displayName.trim()) {
+                            showMessage("Error", "Please enter a valid display name.");
+                            return;
+                        }
+                        const userDocRef = doc(db, "users", currentUser.uid);
+                        const newAvatar = `https://placehold.co/64x64/7c3aed/ffffff?text=${displayName[0].toUpperCase()}`;
+                        const updatedProfile = {
+                            name: displayName,
+                            avatar: newAvatar
+                        };
+                        await updateDoc(userDocRef, updatedProfile);
+                        currentUser = { ...currentUser, ...updatedProfile };
+                        updateUserAuthUI();
+                        document.getElementById('firstLoginModal').classList.replace('flex', 'hidden');
+                        navigateTo('home');
+                        break;
+                    }
+                    case 'signup-form': {
+                        const email = e.target.email.value;
+                        const password = e.target.password.value;
+                        const errorEl = document.getElementById('signup-error');
+                        try {
+                            errorEl.textContent = '';
+                            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                            const user = userCredential.user;
+                            
+                            const newUserProfile = {
+                                name: `User-${user.uid.substring(0, 5)}`,
+                                email: user.email,
+                                phone: '',
+                                joinDate: serverTimestamp(),
+                                avatar: `https://placehold.co/64x64/7c3aed/ffffff?text=${user.email[0].toUpperCase()}`,
+                                level: 'Beginner',
+                                points: 0,
+                                isMentor: false,
+                            };
+                            await setDoc(doc(db, "users", user.uid), newUserProfile);
+                            
+                            document.getElementById('signUpModal').classList.replace('flex', 'hidden');
+                        } catch (error) {
+                            errorEl.textContent = error.message;
+                        }
+                        break;
+                    }
+                    case 'login-form': {
+                        const email = e.target.email.value;
+                        const password = e.target.password.value;
+                        const errorEl = document.getElementById('login-error');
+                        try {
+                            errorEl.textContent = '';
+                            await signInWithEmailAndPassword(auth, email, password);
+                            document.getElementById('logInModal').classList.replace('flex', 'hidden');
+                        } catch (error) {
+                            if (error.code === 'auth/invalid-email') {
+                                errorEl.textContent = 'Invalid email address format.';
+                            } else if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                                errorEl.textContent = 'Invalid email or password.';
+                            } else {
+                                errorEl.textContent = error.message;
+                            }
+                        }
+                        break;
+                    }
+                    case 'edit-profile-form': {
+                        if (!currentUser) return;
+                        const form = e.target;
+                        const updatedProfile = {
+                            name: form.name.value,
+                            email: form.email.value,
+                            phone: form.phone.value,
+                            collegeName: form.collegeName.value,
+                            department: form.department.value,
+                            year: form.year.value,
+                            mentorName: form.mentorName.value,
+                            wantsToCollaborate: form.wantsToCollaborate.value === 'true',
+                            isMentor: form.isMentor.value === 'true'
+                        };
+                        const userDocRef = doc(db, "users", currentUser.uid);
+                        if (!currentUser.collegeName && updatedProfile.collegeName) {
+                            updatedProfile.points = increment(10);
+                        }
+                        await updateDoc(userDocRef, updatedProfile);
+                        currentUser = { ...currentUser, ...updatedProfile };
+                        document.getElementById('editProfileModal').classList.replace('flex', 'hidden');
+                        navigateTo('userProfile', currentUser.uid);
+                        break;
+                    }
+                    case 'ask-question-form': {
+                        if (!currentUser) return;
+                        const form = e.target;
+                        const title = form.querySelector('input[type="text"]').value;
+                        const categoryId = form.querySelector('select').value;
+                        const body = form.querySelector('textarea').value;
+                        if (title && categoryId && body) {
+                            const newQuestion = {
+                                catId: categoryId,
+                                title: title,
+                                body: body,
+                                authorId: currentUser.uid,
+                                votes: 0,
+                                answers: [],
+                                createdAt: serverTimestamp(),
+                                solved: false
+                            };
+                            const docRef = await addDoc(collection(db, "questions"), newQuestion);
+                            
+                            const userDocRef = doc(db, "users", currentUser.uid);
+                            await updateDoc(userDocRef, { topicsCreated: increment(1), points: increment(2) });
+
+                            form.closest('.fixed').classList.replace('flex', 'hidden');
+                            form.reset();
+                            navigateTo('questionDetail', docRef.id);
+                        }
+                        break;
+                    }
+                    case 'edit-question-form': {
+                        if (!currentUser) return;
+                        const form = e.target;
+                        const questionId = form.questionId.value;
+                        const updatedTitle = form.title.value;
+                        const updatedBody = form.body.value;
+
+                        const questionDocRef = doc(db, "questions", questionId);
+                        await updateDoc(questionDocRef, {
+                            title: updatedTitle,
+                            body: updatedBody
+                        });
+
+                        form.closest('.fixed').classList.replace('flex', 'hidden');
+                        showMessage("Success", "Question has been updated.");
+                        navigateTo('questionDetail', questionId);
+                        break;
+                    }
+                    case 'message-member-form': {
+                        if (!currentUser) return;
+                        const form = e.target;
+                        const recipientId = form.recipientId.value;
+                        const messageText = form.body.value;
+                        
+                        try {
+                            const participantIds = [currentUser.uid, recipientId].sort();
+                            const conversationId = participantIds.join('-');
+                            
+                            const convoRef = doc(db, "conversations", conversationId);
+                            const convoSnap = await getDoc(convoRef);
+
+                            const newMessage = {
+                                from: currentUser.uid,
+                                text: messageText,
+                                createdAt: serverTimestamp(),
+                            };
+                            
+                            if (convoSnap.exists()) {
+                                await updateDoc(convoRef, {
+                                    messages: arrayUnion(newMessage)
+                                });
+                            } else {
+                                await setDoc(convoRef, {
+                                    participants: participantIds,
+                                    messages: [newMessage]
+                                });
+                            }
+
+                            const subject = form.subject.value;
+                            await createNotification(
+                                recipientId,
+                                currentUser.uid,
+                                'message',
+                                `${currentUser.name} sent you a new message: "${subject}"`,
+                                { page: 'messageDetail', id: conversationId }
+                            );
+                            
+                            form.closest('.fixed').classList.replace('flex', 'hidden');
+                            form.reset();
+                            showMessage("Success", "Your message has been sent!");
+                        } catch (error) {
+                            console.error("Error sending message:", error);
+                            showMessage("Error", "Failed to send message. Please try again.");
+                        }
+                        break;
+                    }
+                    case 'reply-form': {
+                        if (!currentUser) return;
+                        const form = e.target;
+                        const conversationId = form.conversationId.value;
+                        const recipientId = form.recipientId.value;
+                        const replyText = form.replyText.value;
+                        if(replyText.trim() !== '') {
+                            const convoRef = doc(db, "conversations", conversationId);
+                            await updateDoc(convoRef, {
+                                messages: arrayUnion({
+                                    from: currentUser.uid,
+                                    text: replyText,
+                                    createdAt: new Date(),
+                                })
+                            });
+                            
+                            await createNotification(
+                                recipientId,
+                                currentUser.uid,
+                                'message',
+                                `${currentUser.name} replied to your message.`,
+                                { page: 'messageDetail', id: conversationId }
+                            );
+
+                            form.reset();
+                        }
+                        break;
+                    }
+                    case 'upload-paper-form': {
+                        if (!currentUser) return;
+                        const form = e.target;
+                        const newPaper = {
+                            title: form.title.value,
+                            publishDate: form.publishDate.value,
+                            mentor: form.mentor.value,
+                            content: form.content.value,
+                            authorId: currentUser.uid,
+                            createdAt: serverTimestamp(),
+                            comments: []
+                        };
+                        await addDoc(collection(db, "papers"), newPaper);
+                        await updateDoc(doc(db, "users", currentUser.uid), { points: increment(100) });
+                        form.closest('.fixed').classList.replace('flex', 'hidden');
+                        form.reset();
+                        showMessage("Success", "Your paper has been submitted!");
+                        navigateTo('researchPapers');
+                        break;
+                    }
+                    case 'edit-paper-form': {
+                        if (!currentUser) return;
+                        const form = e.target;
+                        const paperId = form.paperId.value;
+                        const updatedPaper = {
+                            title: form.title.value,
+                            publishDate: form.publishDate.value,
+                            mentor: form.mentor.value,
+                            content: form.content.value,
+                        };
+                        const paperDocRef = doc(db, "papers", paperId);
+                        await updateDoc(paperDocRef, updatedPaper);
+                        form.closest('.fixed').classList.replace('flex', 'hidden');
+                        form.reset();
+                        showMessage("Success", "Your paper has been updated!");
+                        navigateTo('researchPaperDetail', paperId);
+                        break;
+                    }
+                    case 'upload-doc-form': {
+                        if (!currentUser) return;
+                        const form = e.target;
+                        const newDoc = {
+                            title: form.title.value,
+                            content: form.content.value,
+                            authorId: currentUser.uid,
+                            createdAt: serverTimestamp()
+                        };
+                        await addDoc(collection(db, "docs"), newDoc);
+                        await updateDoc(doc(db, "users", currentUser.uid), { points: increment(40) });
+                        form.closest('.fixed').classList.replace('flex', 'hidden');
+                        form.reset();
+                        showMessage("Success", "Your content has been uploaded!");
+                        navigateTo('docs');
+                        break;
+                    }
+                    case 'post-news-form': {
+                        if (!currentUser) return;
+                        const form = e.target;
+                        const newNews = {
+                            title: form.title.value,
+                            shortDescription: form.shortDescription.value,
+                            imageUrl: form.imageUrl.value,
+                            sourceURL: form.sourceURL.value,
+                            content: form.content.value,
+                            authorId: currentUser.uid,
+                            createdAt: serverTimestamp()
+                        };
+                        await addDoc(collection(db, "news"), newNews);
+                        await updateDoc(doc(db, "users", currentUser.uid), { points: increment(10) });
+                        form.closest('.fixed').classList.replace('flex', 'hidden');
+                        form.reset();
+                        showMessage("Success", "Your news has been posted!");
+                        navigateTo('news');
+                        break;
+                    }
+                    case 'create-team-form': {
+                        if (!currentUser) return;
+                        const form = e.target;
+                        const newTeam = {
+                            projectTitle: form.projectTitle.value,
+                            description: form.description.value,
+                            creatorId: currentUser.uid,
+                            createdAt: serverTimestamp(),
+                            interestedMembers: []
+                        };
+                        await addDoc(collection(db, "teams"), newTeam);
+                        form.closest('.fixed').classList.replace('flex', 'hidden');
+                        form.reset();
+                        navigateTo('team');
+                        break;
+                    }
+                    case 'add-project-form': {
+                        if (!currentUser) return;
+                        const form = e.target;
+                        const newProject = {
+                            title: form.projectTitle.value,
+                            shortDescription: form.shortDescription.value,
+                            teamMembers: form.teamMembers.value.split(',').map(s => s.trim()),
+                            tags: form.tags.value.split(',').map(s => s.trim()),
+                            fullDetails: form.fullDetails.value,
+                            authorId: currentUser.uid,
+                            createdAt: serverTimestamp()
+                        };
+                        await addDoc(collection(db, "projects"), newProject);
+                        form.closest('.fixed').classList.replace('flex', 'hidden');
+                        form.reset();
+                        showMessage("Success", "Your project has been added!");
+                        navigateTo('projects');
+                        break;
+                    }
+                    case 'post-announcement-form': {
+                        if (!currentUser || !currentUser.isMentor) return;
+                        const form = e.target;
+                        const announcementId = form.announcementId.value;
+                        const data = {
+                            title: form.title.value,
+                            content: form.content.value,
+                            authorId: currentUser.uid,
+                            updatedAt: serverTimestamp()
+                        };
+                        if (announcementId) {
+                            await updateDoc(doc(db, "announcements", announcementId), data);
+                            showMessage("Success", "Announcement updated!");
+                        } else {
+                            data.createdAt = serverTimestamp();
+                            await addDoc(collection(db, "announcements"), data);
+                            showMessage("Success", "Announcement posted!");
+                        }
+                        form.closest('.fixed').classList.replace('flex', 'hidden');
+                        form.reset();
+                        navigateTo('announcements');
+                        break;
+                    }
+                    case 'create-challenge-form': {
+                        if (!currentUser || !currentUser.isMentor) return;
+                        const form = e.target;
+                        const title = form.title.value;
+                        const numQuestions = parseInt(form.numQuestions.value);
+                        const questions = [];
+
+                        for(let i = 0; i < numQuestions; i++) {
+                            const questionText = form[`q_${i}_text`].value;
+                            const options = [
+                                form[`q_${i}_opt_0`].value,
+                                form[`q_${i}_opt_1`].value,
+                                form[`q_${i}_opt_2`].value,
+                                form[`q_${i}_opt_3`].value,
+                            ];
+                            const correctAnswer = parseInt(form[`q_${i}_correct`].value);
+                            questions.push({ questionText, options, correctAnswer });
+                        }
+
+                        const newChallenge = {
+                            title,
+                            questions,
+                            creatorId: currentUser.uid,
+                            createdAt: serverTimestamp()
+                        };
+
+                        await addDoc(collection(db, "challenges"), newChallenge);
+                        form.closest('.fixed').classList.replace('flex', 'hidden');
+                        form.reset();
+                        showMessage("Success", "Your challenge has been posted!");
+                        navigateTo('challenges');
+                        break;
+                    }
+                    case 'take-challenge-form': {
+                        if (!currentUser) return;
+                        const form = e.target;
+                        const challengeId = form.dataset.id;
+                        
+                        const userDocSnap = await getDoc(doc(db, "users", currentUser.uid));
+                        const userData = userDocSnap.data();
+                        if ((userData.completedChallenges || []).includes(challengeId)) {
+                             showMessage("Already Completed", "You have already completed this challenge.");
+                             navigateTo('challenges');
+                             return;
+                        }
+
+                        const challengeRef = doc(db, "challenges", challengeId);
+                        const challengeSnap = await getDoc(challengeRef);
+                        if (!challengeSnap.exists()) return;
+                        
+                        const challenge = challengeSnap.data();
+                        let score = 0;
+                        const userAnswers = [];
+
+                        challenge.questions.forEach((q, index) => {
+                            const selectedOption = form[`question_${index}`].value;
+                            userAnswers[index] = selectedOption ? parseInt(selectedOption) : -1;
+                            if (selectedOption && parseInt(selectedOption) === q.correctAnswer) {
+                                score++;
+                            }
+                        });
+
+                        const pointsGained = score * 3;
+                        await updateDoc(doc(db, "users", currentUser.uid), {
+                            points: increment(pointsGained),
+                            completedChallenges: arrayUnion(challengeId)
+                        });
+                        
+                        // **FIX**: Update local currentUser object immediately
+                        if (!currentUser.completedChallenges) {
+                            currentUser.completedChallenges = [];
+                        }
+                        currentUser.completedChallenges.push(challengeId);
+                        currentUser.points += pointsGained;
+
+
+                        document.getElementById('challenge-result-title').textContent = `${challenge.title} - Results`;
+                        document.getElementById('challenge-result-score').innerHTML = `You scored <strong class="text-blue-400">${score}/${challenge.questions.length}</strong> and earned <strong class="text-blue-400">${pointsGained}</strong> points!`;
+                        
+                        const resultDetails = document.getElementById('challenge-result-details');
+                        resultDetails.innerHTML = challenge.questions.map((q, index) => {
+                            const userAnswer = userAnswers[index];
+                            const isCorrect = userAnswer === q.correctAnswer;
+                            return `
+                                <div class="p-4 rounded-md ${isCorrect ? 'bg-green-900/50' : 'bg-red-900/50'}">
+                                    <p class="font-semibold">${index + 1}. ${q.questionText}</p>
+                                    <p class="text-sm mt-2">Your answer: ${userAnswer > -1 ? q.options[userAnswer] : 'Not answered'} (${isCorrect ? 'Correct' : 'Incorrect'})</p>
+                                    ${!isCorrect ? `<p class="text-sm mt-1">Correct answer: ${q.options[q.correctAnswer]}</p>` : ''}
+                                </div>
+                            `;
+                        }).join('');
+
+                        document.getElementById('challengeResultModal').classList.replace('hidden', 'flex');
+                        navigateTo('challenges');
+                        break;
+                    }
+                }
+            });
+
+            document.body.addEventListener('change', e => {
+                if (e.target.name === 'numQuestions') {
+                    renderChallengeQuestionFields(parseInt(e.target.value));
+                }
+            });
+
+            // --- INITIALIZATION ---
+            renderModals();
+            renderHelperBot();
+        });
+    </script>
+</body>
+</html>
