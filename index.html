@@ -1,0 +1,807 @@
+<!-- Paste your website code here -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuantumQuorum - The Future of Quantum Learning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #0d0d1a; /* Darker base */
+            color: #E0D8FF;
+            overflow-x: hidden;
+            position: relative;
+        }
+        h1, h2, h3, h4 {
+            letter-spacing: -0.02em;
+            text-shadow: 0 0 15px rgba(192, 97, 255, 0.3);
+        }
+        .text-gradient {
+            background: linear-gradient(to right, #E0D8FF, #C061FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+        .text-pink-highlight {
+            color: #C061FF;
+            text-shadow: 0 0 10px rgba(192, 97, 255, 0.7);
+        }
+        p {
+            line-height: 1.7;
+        }
+        .gradient-bg::before {
+            content: '';
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 1200px;
+            height: 1200px;
+            transform: translate(-50%, -50%);
+            background-image: radial-gradient(circle, rgba(0, 255, 255, 0.15) 0%, rgba(0, 255, 255, 0.05) 20%, rgba(13, 13, 26, 0) 60%);
+            animation: pulse 10s infinite ease-in-out;
+            z-index: -1;
+        }
+        
+        @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.8; }
+            50% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.8; }
+        }
+
+        /* Starfield Background */
+        @keyframes twinkle {
+            0% { opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { opacity: 0; }
+        }
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: transparent;
+        }
+        .stars::after {
+            content: "";
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            background: white;
+            box-shadow: 
+                15vw 23vh 1px 1px #fff, 80vw 12vh 0px 0px #fff, 5vw 8vh 1px 1px #fff, 42vw 82vh 1px 0px #fff, 
+                82vw 82vh 0px 1px #fff, 91vw 12vh 0px 1px #fff, 63vw 12vh 1px 1px #fff, 2vw 36vh 0px 1px #fff, 
+                6vw 4vh 0px 1px #fff, 9vw 7vh 1px 0px #fff, 15vw 23vh 0px 1px #fff, 80vw 12vh 1px 1px #fff, 
+                5vw 8vh 0px 1px #fff, 42vw 82vh 0px 1px #fff, 82vw 82vh 1px 0px #fff, 91vw 12vh 1px 0px #fff, 
+                63vw 12vh 0px 1px #fff, 2vw 36vh 1px 0px #fff, 6vw 4vh 1px 0px #fff, 9vw 7vh 0px 1px #fff,
+                55vw 53vh 1px 1px #fff, 10vw 42vh 0px 0px #fff, 25vw 18vh 1px 1px #fff, 42vw 32vh 1px 0px #fff, 
+                82vw 42vh 0px 1px #fff, 91vw 22vh 0px 1px #fff, 33vw 22vh 1px 1px #fff, 2vw 66vh 0px 1px #fff, 
+                6vw 84vh 0px 1px #fff, 9vw 27vh 1px 0px #fff, 15vw 83vh 0px 1px #fff, 80vw 32vh 1px 1px #fff, 
+                5vw 28vh 0px 1px #fff, 42vw 12vh 0px 1px #fff, 82vw 92vh 1px 0px #fff, 91vw 32vh 1px 0px #fff, 
+                63vw 42vh 0px 1px #fff, 2vw 16vh 1px 0px #fff, 6vw 34vh 1px 0px #fff, 9vw 57vh 0px 1px #fff;
+            animation: twinkle 3s infinite alternate;
+        }
+         .stars2::after {
+            width: 2px;
+            height: 2px;
+            box-shadow: 
+                5vw 23vh 1px 1px #fff, 8vw 12vh 0px 0px #fff, 5vw 8vh 1px 1px #fff, 4vw 82vh 1px 0px #fff, 
+                8vw 82vh 0px 1px #fff, 9vw 12vh 0px 1px #fff, 6vw 12vh 1px 1px #fff, 2vw 36vh 0px 1px #fff, 
+                6vw 4vh 0px 1px #fff, 9vw 7vh 1px 0px #fff, 1vw 23vh 0px 1px #fff, 8vw 12vh 1px 1px #fff, 
+                5vw 8vh 0px 1px #fff, 4vw 82vh 0px 1px #fff, 8vw 92vh 1px 0px #fff, 9vw 32vh 1px 0px #fff, 
+                6vw 42vh 0px 1px #fff, 2vw 16vh 1px 0px #fff, 6vw 34vh 1px 0px #fff, 9vw 57vh 0px 1px #fff;
+            animation-duration: 5s;
+        }
+
+        .btn-primary {
+            background-image: linear-gradient(to right, #8A2BE2, #C061FF);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            box-shadow: 0 0 15px rgba(192, 97, 255, 0.6);
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+             transition: all 0.3s ease;
+        }
+        .btn-secondary:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .feature-card {
+            background-color: rgba(22, 18, 34, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, opacity 0.5s ease-out .1s;
+            opacity: 0;
+            transform: translateY(20px);
+            z-index: 1;
+        }
+        .feature-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 0 20px rgba(192, 97, 255, 0.4);
+            border-color: rgba(192, 97, 255, 0.3);
+        }
+        .feature-card.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .feature-card.highlighted {
+            box-shadow: 0 0 25px rgba(192, 97, 255, 0.8), 0 0 10px rgba(224, 216, 255, 0.5) inset;
+            transform: translateY(-8px) scale(1.03);
+        }
+        .nav-link:hover {
+            color: #C061FF;
+        }
+        .fade-in {
+            opacity: 0;
+            transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+            transform: translateY(20px);
+        }
+        .fade-in.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .features-wrapper {
+            position: relative;
+        }
+        .features-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 800px;
+            height: 800px;
+            transform: translate(-50%, -50%);
+            background-image: radial-gradient(circle, rgba(0, 255, 255, 0.1) 0%, rgba(0, 255, 255, 0.03) 30%, rgba(13, 13, 26, 0) 70%);
+            z-index: 0;
+        }
+        /* Quantum Animations */
+        .quantum-animation {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 200px;
+            height: 200px;
+            opacity: 0.5;
+            z-index: 0;
+        }
+        .quantum-left {
+            left: 5%;
+        }
+        .quantum-right {
+            right: 5%;
+        }
+        @media (max-width: 1024px) {
+            .quantum-animation {
+                display: none;
+            }
+        }
+        .quantum-animation svg {
+            width: 100%;
+            height: 100%;
+            animation: rotate 30s linear infinite;
+        }
+        .quantum-animation .core {
+            animation: pulse-core 4s infinite ease-in-out;
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes pulse-core {
+            0%, 100% { r: 4; opacity: 0.8; }
+            50% { r: 6; opacity: 1; }
+        }
+
+        /* Animated Quote Styles */
+        #quote-container {
+            min-height: 2.5rem; /* Reserve space to prevent layout shift */
+        }
+        #animated-quote {
+            color: rgba(224, 216, 255, 0.4); /* Semi-transparent text */
+            text-shadow: 0 0 10px rgba(192, 97, 255, 0.2);
+            position: relative;
+            display: inline;
+        }
+        #animated-quote::after {
+            content: '|';
+            position: absolute;
+            right: -0.2em;
+            color: rgba(0, 255, 255, 0.5);
+            animation: blink-caret 1s step-end infinite;
+        }
+        @keyframes blink-caret {
+            from, to { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Interactive Heading Styles */
+        #main-heading .q-highlight {
+            color: #FF6B6B; /* A softer, less harsh red */
+            text-shadow: 0 0 15px rgba(255, 107, 107, 0.5);
+            -webkit-text-fill-color: initial; /* Override the transparency from the gradient class */
+            background: none; /* Remove the gradient from the first letter */
+        }
+        #main-heading .char {
+            display: inline-block;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            cursor: pointer;
+        }
+        #main-heading .char.hover-char {
+            -webkit-text-fill-color: white;
+            text-shadow: 0 0 25px #fff, 0 0 10px rgba(0, 255, 255, 0.8);
+            transform: translateY(-5px) scale(1.1);
+        }
+        #main-heading .char.neighbor-char {
+            -webkit-text-fill-color: #f0ebff;
+            text-shadow: 0 0 15px rgba(192, 97, 255, 0.6);
+            transform: translateY(-2px) scale(1.05);
+        }
+        
+        /* Scroll to top button and rocket animation */
+        #scrollToTopBtn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background-color: rgba(192, 97, 255, 0.8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(100px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        #scrollToTopBtn.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        #rocket {
+            position: fixed;
+            width: 60px; /* Increased size */
+            height: 60px; /* Increased size */
+            z-index: 1001;
+            pointer-events: none;
+            transition: transform 1.2s cubic-bezier(0.5, 0, 1, 0.5);
+        }
+        @keyframes flame {
+            0%, 100% { transform: scaleY(1) translateY(0); }
+            50% { transform: scaleY(1.6) translateY(5px); }
+        }
+        #rocket .flame {
+            animation: flame 0.2s infinite;
+        }
+        #logo.impact {
+            animation: impact-glow 0.7s ease-out;
+        }
+        @keyframes impact-glow {
+            0% { text-shadow: 0 0 15px rgba(192, 97, 255, 0.3); transform: scale(1); }
+            50% { text-shadow: 0 0 40px #fff, 0 0 20px rgba(0, 255, 255, 1); transform: scale(1.1); }
+            100% { text-shadow: 0 0 15px rgba(192, 97, 255, 0.3); transform: scale(1); }
+        }
+
+    </style>
+</head>
+<body class="gradient-bg">
+    <div class="stars"></div>
+    <div class="stars stars2"></div>
+
+    <!-- Header -->
+    <header class="container mx-auto px-6 py-5 relative z-10">
+        <nav class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <span id="logo" class="text-2xl font-bold text-white"><span class="text-pink-highlight">Q</span>uantum<span class="text-pink-highlight">Q</span>uorum</span>
+            </div>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#features" onclick="smoothScroll(event, 'start')" class="nav-link text-gray-300">Features</a>
+                <a href="#stats" onclick="smoothScroll(event, 'center')" class="nav-link text-gray-300">Community</a>
+                <a href="#about" onclick="smoothScroll(event, 'start')" class="nav-link text-gray-300">About</a>
+            </div>
+            <div class="md:hidden">
+                <button class="text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <main class="container mx-auto px-6 text-center pt-12 md:pt-20 pb-12 md:pb-16 relative">
+         <!-- Left Animation -->
+        <div class="quantum-animation quantum-left">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle class="core" cx="50" cy="50" r="5" fill="rgba(0, 255, 255, 0.7)"/>
+                <ellipse cx="50" cy="50" rx="45" ry="20" stroke="rgba(0, 255, 255, 0.5)" stroke-width="0.5" fill="none" transform="rotate(45 50 50)"/>
+                <ellipse cx="50" cy="50" rx="45" ry="20" stroke="rgba(192, 97, 255, 0.5)" stroke-width="0.5" fill="none" transform="rotate(-45 50 50)"/>
+                <ellipse cx="50" cy="50" rx="30" ry="30" stroke="rgba(0, 255, 255, 0.3)" stroke-width="0.5" fill="none" />
+            </svg>
+        </div>
+        
+        <div class="relative z-10">
+            <div class="flex items-center justify-center space-x-2 my-4 fade-in">
+                <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.293 2.293a1 1 0 010 1.414L11 12l4.293 4.293a1 1 0 01-1.414 1.414L12 13.414l-4.293 4.293a1 1 0 01-1.414-1.414L10.586 12 6.293 7.707a1 1 0 011.414-1.414L12 10.586l4.293-4.293a1 1 0 011.414 0z"></path></svg>
+                <p class="text-sm font-semibold tracking-widest text-purple-400 uppercase">The Future of Quantum Learning</p>
+            </div>
+            <h1 id="main-heading" class="text-4xl sm:text-5xl md:text-7xl font-bold leading-tight mb-4 fade-in text-gradient" style="transition-delay: 100ms;">QuantumQuorum</h1>
+            <p class="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-8 fade-in" style="transition-delay: 200ms;">Where quantum minds converge to explore, learn, and innovate</p>
+            <p class="text-base md:text-lg text-gray-400 max-w-3xl mx-auto mb-10 fade-in" style="transition-delay: 300ms;">
+                Join the premier online community for quantum computing enthusiasts, researchers, and students. Engage in cutting-edge discussions, collaborate on groundbreaking projects, and accelerate your journey in the quantum realm.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4 fade-in" style="transition-delay: 400ms;">
+                <a href="main.html" class="btn-primary text-white font-semibold px-8 py-3 rounded-lg flex items-center justify-center space-x-2 w-full sm:w-auto">
+                    <span>Join the Community</span>
+                    <span>&rarr;</span>
+                </a>
+                <a href="#features" onclick="smoothScroll(event, 'start')" class="btn-secondary text-white font-semibold px-8 py-3 rounded-lg w-full sm:w-auto">Explore Features</a>
+            </div>
+        </div>
+        
+        <!-- Right Animation -->
+        <div class="quantum-animation quantum-right">
+             <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="animation-direction: reverse;">
+                <circle class="core" cx="50" cy="50" r="5" fill="rgba(192, 97, 255, 0.7)"/>
+                <ellipse cx="50" cy="50" rx="40" ry="15" stroke="rgba(192, 97, 255, 0.5)" stroke-width="0.5" fill="none" transform="rotate(30 50 50)"/>
+                <ellipse cx="50" cy="50" rx="40" ry="15" stroke="rgba(0, 255, 255, 0.5)" stroke-width="0.5" fill="none" transform="rotate(-60 50 50)"/>
+                <ellipse cx="50" cy="50" rx="48" ry="48" stroke="rgba(192, 97, 255, 0.3)" stroke-width="0.5" fill="none" stroke-dasharray="2 4"/>
+            </svg>
+        </div>
+    </main>
+
+    <!-- Animated Quotes Section -->
+    <section class="container mx-auto px-6 py-12 text-center relative z-10">
+        <div id="quote-container" class="h-10">
+            <p id="animated-quote" class="text-base md:text-xl font-mono inline-block"></p>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section id="stats" class="container mx-auto px-6 py-12 md:py-16 relative z-10">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            <div class="fade-in">
+                <p class="text-3xl sm:text-4xl font-bold text-white" id="active-members">...</p>
+                <p class="text-gray-400 mt-2">Active Members</p>
+            </div>
+            <div class="fade-in" style="transition-delay: 100ms;">
+                <p class="text-3xl sm:text-4xl font-bold text-white" id="questions-answered">...</p>
+                <p class="text-gray-400 mt-2">Questions Answered</p>
+            </div>
+            <div class="fade-in" style="transition-delay: 200ms;">
+                <p class="text-3xl sm:text-4xl font-bold text-white" id="research-papers">...</p>
+                <p class="text-gray-400 mt-2">Research Papers</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="container mx-auto px-6 py-16 md:py-20 relative z-10">
+        <div class="text-center mb-12 fade-in">
+            <h2 class="text-3xl sm:text-4xl font-bold text-white">Powerful Features for Quantum Innovation</h2>
+            <p class="text-base md:text-lg text-gray-400 mt-4 max-w-2xl mx-auto">Everything you need to accelerate your quantum computing journey in one integrated platform</p>
+        </div>
+        <div class="features-wrapper">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+                <!-- Feature Card 1 -->
+                <div id="q-and-a-card" class="feature-card p-8 rounded-2xl">
+                    <div class="w-16 h-16 mb-6 flex items-center justify-center bg-purple-900/50 rounded-xl">
+                        <svg class="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-white mb-3">Advanced Q&A System</h3>
+                    <p class="text-gray-400">Post questions, get expert answers, and engage in deep discussions about quantum algorithms, hardware, and theory.</p>
+                </div>
+                <!-- Feature Card 2 -->
+                <div id="community-card" class="feature-card p-8 rounded-2xl">
+                    <div class="w-16 h-16 mb-6 flex items-center justify-center bg-purple-900/50 rounded-xl">
+                        <svg class="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-white mb-3">Vibrant Community</h3>
+                    <p class="text-gray-400">Connect with researchers, students, and faculty from leading quantum institutions worldwide.</p>
+                </div>
+                <!-- Feature Card 3 -->
+                <div id="gamified-card" class="feature-card p-8 rounded-2xl">
+                    <div class="w-16 h-16 mb-6 flex items-center justify-center bg-purple-900/50 rounded-xl">
+                         <svg class="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-white mb-3">Gamified Learning</h3>
+                    <p class="text-gray-400">Earn points, climb leaderboards, and complete quantum challenges to test your knowledge.</p>
+                </div>
+                <!-- Feature Card 4 -->
+                <div id="research-card" class="feature-card p-8 rounded-2xl">
+                    <div class="w-16 h-16 mb-6 flex items-center justify-center bg-purple-900/50 rounded-xl">
+                        <svg class="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-white mb-3">Research Hub</h3>
+                    <p class="text-gray-400">Access the latest papers, documentation, and breakthroughs in quantum computing research.</p>
+                </div>
+                 <!-- Feature Card 5 -->
+                <div id="collaboration-card" class="feature-card p-8 rounded-2xl">
+                    <div class="w-16 h-16 mb-6 flex items-center justify-center bg-purple-900/50 rounded-xl">
+                        <svg class="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-white mb-3">Team Collaboration</h3>
+                    <p class="text-gray-400">Find project partners, join research teams, and showcase your quantum innovations.</p>
+                </div>
+                <!-- Feature Card 6 -->
+                <div id="challenges-card" class="feature-card p-8 rounded-2xl">
+                    <div class="w-16 h-16 mb-6 flex items-center justify-center bg-purple-900/50 rounded-xl">
+                        <svg class="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-white mb-3">Interactive Challenges</h3>
+                    <p class="text-gray-400">Solve coding and theory challenges across different difficulty levels and earn recognition.</p>
+                </div>
+                 <!-- Feature Card 7 -->
+                <div id="faculty-card" class="feature-card p-8 rounded-2xl">
+                    <div class="w-16 h-16 mb-6 flex items-center justify-center bg-purple-900/50 rounded-xl">
+                        <svg class="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path></svg>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-white mb-3">Faculty Corner</h3>
+                    <p class="text-gray-400">Direct access to quantum computing experts, professors, and industry leaders.</p>
+                </div>
+                <!-- Feature Card 8 -->
+                <div id="showcase-card" class="feature-card p-8 rounded-2xl">
+                    <div class="w-16 h-16 mb-6 flex items-center justify-center bg-purple-900/50 rounded-xl">
+                        <svg class="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-white mb-3">Project Showcase</h3>
+                    <p class="text-gray-400">Display your quantum projects, get feedback, and inspire others in the community.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="container mx-auto px-6 py-16 md:py-20 text-center relative z-10">
+        <h2 class="text-3xl sm:text-4xl font-bold text-white fade-in">Ready to Shape the Quantum Future?</h2>
+        <p class="text-base md:text-lg text-gray-400 mt-4 max-w-2xl mx-auto mb-8 fade-in" style="transition-delay: 100ms;">
+            Whether you're a curious student, seasoned researcher, or quantum enthusiast, QuantumQuorum provides community you need to excel in quantum computing.
+        </p>
+        <div class="flex justify-center space-x-4 fade-in" style="transition-delay: 200ms;">
+            <a href="#" class="btn-primary text-white font-semibold px-8 py-3 rounded-lg">Start Your Journey</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="about" class="container mx-auto px-6 py-10 md:py-12 border-t border-gray-800 relative z-10">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Column 1 -->
+            <div class="col-span-1 md:col-span-2">
+                <div class="flex items-center space-x-3 mb-4">
+                    <span class="text-2xl font-bold text-white"><span class="text-pink-highlight">Q</span>uantum<span class="text-pink-highlight">Q</span>uorum</span>
+                </div>
+                <p class="text-gray-400 max-w-md">
+                    The premier online community for quantum computing enthusiasts, researchers, and students advancing the frontiers of quantum science.
+                </p>
+                <div class="flex space-x-4 mt-6">
+                    <a href="#" class="text-gray-400 hover:text-white"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M22.46 6c-.77.35-1.6.58-2.46.67.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98-3.56-.18-6.73-1.89-8.84-4.48-.37.63-.58 1.37-.58 2.15 0 1.49.76 2.81 1.91 3.58-.7-.02-1.36-.21-1.94-.53v.05c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.52 8.52 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21c7.35 0 11.37-6.08 11.37-11.37 0-.17 0-.34-.01-.51.78-.57 1.45-1.28 1.98-2.08z"></path></svg></a>
+                    <a href="#" class="text-gray-400 hover:text-white"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14zm-7 5H8v7h4v-7zm5 0h-4v7h4v-7z"></path></svg></a>
+                    <a href="#" class="text-gray-400 hover:text-white"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"></path></svg></a>
+                </div>
+            </div>
+            <!-- Column 2 -->
+            <div>
+                <h4 class="text-lg font-semibold text-white mb-4">Platform</h4>
+                <ul class="space-y-3">
+                    <li><a href="#" onclick="highlightFeature(event, 'q-and-a-card')" class="text-gray-400 hover:text-white">Advanced Q&A System</a></li>
+                    <li><a href="#" onclick="highlightFeature(event, 'community-card')" class="text-gray-400 hover:text-white">Vibrant Community</a></li>
+                    <li><a href="#" onclick="highlightFeature(event, 'gamified-card')" class="text-gray-400 hover:text-white">Gamified Learning</a></li>
+                    <li><a href="#" onclick="highlightFeature(event, 'research-card')" class="text-gray-400 hover:text-white">Research Hub</a></li>
+                    <li><a href="#" onclick="highlightFeature(event, 'collaboration-card')" class="text-gray-400 hover:text-white">Team Collaboration</a></li>
+                    <li><a href="#" onclick="highlightFeature(event, 'challenges-card')" class="text-gray-400 hover:text-white">Interactive Challenges</a></li>
+                    <li><a href="#" onclick="highlightFeature(event, 'faculty-card')" class="text-gray-400 hover:text-white">Faculty Corner</a></li>
+                    <li><a href="#" onclick="highlightFeature(event, 'showcase-card')" class="text-gray-400 hover:text-white">Project Showcase</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="mt-12 text-center text-gray-500">
+            <p>&copy; 2025 QuantumQuorum. Empowering the quantum computing community.</p>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top Button and Rocket Animation Container -->
+    <div id="scrollToTopBtn">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+    </div>
+    <div id="rocket" style="display: none;">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 20L12 17L15 20V4L9 4V20Z" fill="white"/>
+            <path d="M12 17L9 20H15L12 17Z" fill="#C061FF"/>
+            <path class="flame" d="M9 22L12 20L15 22V24L9 24V22Z" fill="rgba(0, 255, 255, 0.8)"/>
+        </svg>
+    </div>
+    
+    <!-- Firebase SDKs -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB6LZQRoUIsttz3rgTL3u7WzC6sSLCu8bY",
+            authDomain: "quantum-e51b0.firebaseapp.com",
+            projectId: "quantum-e51b0",
+            storageBucket: "quantum-e51b0.appspot.com",
+            messagingSenderId: "430851021652",
+            appId: "1:430851021652:web:9b81ae3fbe26935ce646c1",
+            measurementId: "G-5EEEH8093D"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Function to fetch and display stats
+        async function getStats() {
+            try {
+                // Corrected the collection name for papers to match your rules
+                const usersCol = collection(db, "users");
+                const questionsCol = collection(db, "questions");
+                const papersCol = collection(db, "papers"); // FIX: Was "researchPapers"
+
+                const userSnapshot = await getDocs(usersCol);
+                const questionSnapshot = await getDocs(questionsCol);
+                const paperSnapshot = await getDocs(papersCol);
+
+                document.getElementById('active-members').innerText = userSnapshot.size.toLocaleString() + '+';
+                document.getElementById('questions-answered').innerText = questionSnapshot.size.toLocaleString() + '+';
+                document.getElementById('research-papers').innerText = paperSnapshot.size.toLocaleString() + '+';
+
+            } catch (error) {
+                console.error("Error fetching stats from Firebase: ", error);
+                // Display fallback text if there's an error
+                document.getElementById('active-members').innerText = '10,000+';
+                document.getElementById('questions-answered').innerText = '50,000+';
+                document.getElementById('research-papers').innerText = '1,000+';
+            }
+        }
+
+        // Fetch stats when the page loads
+        document.addEventListener('DOMContentLoaded', getStats);
+    </script>
+
+
+    <script>
+        // Smooth scrolling for navigation links
+        function smoothScroll(event, blockPosition = 'start') {
+            event.preventDefault();
+            const targetId = event.currentTarget.getAttribute("href");
+            const targetElement = document.querySelector(targetId);
+            if(targetElement) {
+                targetElement.scrollIntoView({ behavior: 'smooth', block: blockPosition });
+            }
+        }
+
+        // Highlight a feature card
+        function highlightFeature(event, cardId) {
+            event.preventDefault();
+            const card = document.getElementById(cardId);
+            if (!card) return;
+
+            // Scroll to the feature card's position
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // Use a timeout to apply the highlight after the scroll has likely started
+            setTimeout(() => {
+                // Remove highlight from any other card
+                document.querySelectorAll('.feature-card.highlighted').forEach(c => c.classList.remove('highlighted'));
+                
+                card.classList.add('highlighted');
+                
+                // Remove the highlight after 2.5 seconds
+                setTimeout(() => {
+                    card.classList.remove('highlighted');
+                }, 2500); 
+            }, 600); // Delay to allow for smooth scroll animation
+        }
+
+        // Intersection Observer for fade-in animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    // Optional: unobserve after it's visible so it doesn't re-trigger
+                    // observer.unobserve(entry.target); 
+                }
+            });
+        }, {
+            threshold: 0.1
+        });
+
+        const targets = document.querySelectorAll('.fade-in, .feature-card');
+        targets.forEach(target => {
+            observer.observe(target);
+        });
+        
+        // Interactive heading animation
+        function setupHeadingAnimation() {
+            const heading = document.getElementById('main-heading');
+            if (!heading) return;
+
+            const text = heading.textContent.trim();
+            heading.innerHTML = ''; // Clear the original text
+
+            const chars = text.split('').map(char => {
+                const span = document.createElement('span');
+                span.textContent = char;
+                // Check if the character is 'Q' (case-insensitive) and add the highlight class
+                if (char.toLowerCase() === 'q') {
+                    span.className = 'char q-highlight';
+                } else {
+                    span.className = 'char';
+                }
+                heading.appendChild(span);
+                return span;
+            });
+
+            chars.forEach((char, index) => {
+                char.addEventListener('mouseenter', () => {
+                    // Clear previous highlights first to avoid sticky states
+                    chars.forEach(c => {
+                        c.classList.remove('hover-char', 'neighbor-char');
+                    });
+
+                    // Add classes to the current char and its neighbors
+                    char.classList.add('hover-char');
+                    if (chars[index - 1]) chars[index - 1].classList.add('neighbor-char');
+                    if (chars[index + 1]) chars[index + 1].classList.add('neighbor-char');
+                });
+            });
+
+            heading.addEventListener('mouseleave', () => {
+                // Reset all characters when the mouse leaves the heading area
+                chars.forEach(c => {
+                    c.classList.remove('hover-char', 'neighbor-char');
+                });
+            });
+        }
+
+        // Typing animation for quotes
+        function setupTypingAnimation() {
+            const quotes = [
+                "Alone we can do so little; together we can do so much.",
+                "The important thing is not to stop questioning. Curiosity has its own reason for existing.",
+                "The science of today is the technology of tomorrow.",
+                "An investment in knowledge pays the best interest.",
+                "Logic will get you from A to B. Imagination will take you everywhere."
+            ];
+            const quoteElement = document.getElementById('animated-quote');
+            if (!quoteElement) return;
+
+            let quoteIndex = 0;
+            let charIndex = 0;
+            let isDeleting = false;
+            const typingSpeed = 100;
+            const deletingSpeed = 50;
+            const delayBetweenQuotes = 2000;
+
+            function type() {
+                const currentQuote = quotes[quoteIndex];
+                let displayText;
+                let timeoutSpeed = typingSpeed;
+
+                if (isDeleting) {
+                    // Deleting
+                    displayText = currentQuote.substring(0, charIndex - 1);
+                    charIndex--;
+                    timeoutSpeed = deletingSpeed;
+                } else {
+                    // Typing
+                    displayText = currentQuote.substring(0, charIndex + 1);
+                    charIndex++;
+                }
+
+                quoteElement.textContent = displayText;
+
+                if (!isDeleting && charIndex === currentQuote.length) {
+                    // Finished typing, pause then start deleting
+                    isDeleting = true;
+                    timeoutSpeed = delayBetweenQuotes;
+                } else if (isDeleting && charIndex === 0) {
+                    // Finished deleting, move to next quote
+                    isDeleting = false;
+                    quoteIndex = (quoteIndex + 1) % quotes.length;
+                    timeoutSpeed = 500; // Pause before starting next quote
+                }
+
+                setTimeout(type, timeoutSpeed);
+            }
+            
+            // Start the animation
+            type();
+        }
+        
+       // Scroll to top and rocket animation logic
+        function setupScrollToTop() {
+            const btn = document.getElementById('scrollToTopBtn');
+            const rocket = document.getElementById('rocket');
+            const logo = document.getElementById('logo');
+            let isAnimating = false;
+
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 300) {
+                    btn.classList.add('visible');
+                } else {
+                    btn.classList.remove('visible');
+                }
+            });
+
+            btn.addEventListener('click', () => {
+                if (isAnimating) return;
+                isAnimating = true;
+
+                const btnRect = btn.getBoundingClientRect();
+                const logoRect = logo.getBoundingClientRect();
+
+                // Set initial rocket position
+                rocket.style.display = 'block';
+                rocket.style.left = `${btnRect.left + (btnRect.width / 2) - 30}px`;
+                rocket.style.top = `${btnRect.top + (btnRect.height / 2) - 30}px`;
+                rocket.style.transform = 'translate(0, 0) rotate(-45deg)';
+                rocket.style.transition = 'transform 1.2s cubic-bezier(0.5, 0, 1, 0.5)';
+
+                // Animate to target
+                requestAnimationFrame(() => {
+                    const targetX = logoRect.left + (logoRect.width / 2) - (btnRect.left + (btnRect.width / 2));
+                    const targetY = logoRect.top + (logoRect.height / 2) - (btnRect.top + (btnRect.height / 2));
+                    rocket.style.transform = `translate(${targetX}px, ${targetY}px) rotate(0deg)`;
+                });
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                setTimeout(() => {
+                    rocket.style.display = 'none';
+                    rocket.style.transition = 'none';
+                    createBurst(logoRect.left + logoRect.width / 2, logoRect.top + logoRect.height / 2);
+                    logo.classList.add('impact');
+                    
+                    setTimeout(() => {
+                        logo.classList.remove('impact');
+                        isAnimating = false;
+                    }, 700);
+                }, 1200);
+            });
+
+            function createBurst(x, y) {
+                const burst = document.createElement('div');
+                burst.className = 'burst';
+                burst.style.left = `${x}px`;
+                burst.style.top = `${y}px`;
+                for (let i = 0; i < 15; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    const angle = Math.random() * 360;
+                    const distance = Math.random() * 60 + 30;
+                    particle.style.setProperty('--x', `${Math.cos(angle * Math.PI / 180) * distance}px`);
+                    particle.style.setProperty('--y', `${Math.sin(angle * Math.PI / 180) * distance}px`);
+                    burst.appendChild(particle);
+                }
+                document.body.appendChild(burst);
+                setTimeout(() => {
+                    document.body.removeChild(burst);
+                }, 600);
+            }
+        }
+
+        // Call the setup functions after the DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            setupHeadingAnimation();
+            setupScrollToTop();
+            setupTypingAnimation();
+        });
+    </script>
+
+</body>
+</html>
