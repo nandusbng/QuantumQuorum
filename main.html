@@ -607,6 +607,25 @@
                     updateLoginButtonState();
                 }
             }
+            /**
+ * Validates the signup email to ensure it ends with the correct college domain.
+ * @param {HTMLFormElement} form The form element being submitted.
+ * @returns {boolean} True if the email is valid, false otherwise.
+ */
+function validateSignup(form) {
+    const emailInput = form.querySelector('input[name="email"]');
+    const errorEl = document.getElementById('signup-error');
+    const email = emailInput.value.trim();
+
+    // Check if the email ends with the allowed domain
+    if (!email.endsWith('@svce.ac.in')) {
+        errorEl.textContent = 'Please use your college email (@svce.ac.in) to sign up.';
+        return false;
+    }
+    
+    errorEl.textContent = ''; // Clear any previous errors
+    return true;
+}
             // --- AUTHENTICATION ---
             onAuthStateChanged(auth, async (user) => {
                 if (user) {
@@ -2394,6 +2413,7 @@
                         }
                         break;
                     }
+                    
                     case 'first-login-form': {
                         const form = e.target;
                         const displayName = form.displayName.value;
@@ -2415,32 +2435,37 @@
                         break;
                     }
                     case 'signup-form': {
-                        const email = e.target.email.value;
-                        const password = e.target.password.value;
-                        const errorEl = document.getElementById('signup-error');
-                        try {
-                            errorEl.textContent = '';
-                            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                            const user = userCredential.user;
-                            
-                            const newUserProfile = {
-                                name: `User-${user.uid.substring(0, 5)}`,
-                                email: user.email,
-                                phone: '',
-                                joinDate: serverTimestamp(),
-                                avatar: `https://placehold.co/64x64/7c3aed/ffffff?text=${user.email[0].toUpperCase()}`,
-                                level: 'Beginner',
-                                points: 0,
-                                isMentor: false,
-                            };
-                            await setDoc(doc(db, "users", user.uid), newUserProfile);
-                            
-                            document.getElementById('signUpModal').classList.replace('flex', 'hidden');
-                        } catch (error) {
-                            errorEl.textContent = error.message;
-                        }
-                        break;
+                    // Call the validation function and stop if it returns false
+                    if (!validateSignup(e.target)) {
+                        return; 
                     }
+
+                    const email = e.target.email.value;
+                    const password = e.target.password.value;
+                    const errorEl = document.getElementById('signup-error');
+                    try {
+                        errorEl.textContent = '';
+                        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                        const user = userCredential.user;
+                        
+                        const newUserProfile = {
+                            name: `User-${user.uid.substring(0, 5)}`,
+                            email: user.email,
+                            phone: '',
+                            joinDate: serverTimestamp(),
+                            avatar: `https://placehold.co/64x64/7c3aed/ffffff?text=${user.email[0].toUpperCase()}`,
+                            level: 'Beginner',
+                            points: 0,
+                            isMentor: false,
+                        };
+                        await setDoc(doc(db, "users", user.uid), newUserProfile);
+                        
+                        document.getElementById('signUpModal').classList.replace('flex', 'hidden');
+                    } catch (error) {
+                        errorEl.textContent = error.message;
+                    }
+                    break;
+                }
                     case 'login-form': {
                         const email = e.target.email.value;
                         const password = e.target.password.value;
